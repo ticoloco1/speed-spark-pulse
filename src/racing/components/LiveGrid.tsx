@@ -22,8 +22,8 @@ export const LiveGrid = () => {
             <div className="text-[10px] font-display font-bold text-muted-foreground">
               {p.position}º <span className="text-foreground">{p.name}</span>
             </div>
-            <div className="w-full aspect-[2/1] -my-1">
-              <RaceCar color={p.carColor} number={p.number} className="w-full h-full" />
+            <div className="w-full aspect-[2/1] -my-1 car-chassis-vibrate-soft">
+              <RaceCar pilot={p} view="side" speed={0.6} className="w-full h-full" />
             </div>
             <div className="text-[9px] font-mono text-muted-foreground">#{p.number}</div>
           </div>

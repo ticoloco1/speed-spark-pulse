@@ -32,8 +32,8 @@ export const BottomTicker = () => {
               <div className="font-display font-bold text-lg tabular-nums text-muted-foreground leading-none w-6 text-center">
                 {p.position}
               </div>
-              <div className="w-[58px] h-[36px] shrink-0">
-                <RaceCar color={p.carColor} number={p.number} className="w-full h-full" />
+              <div className="w-[64px] h-[36px] shrink-0 car-chassis-vibrate-soft">
+                <RaceCar pilot={p} view="side" speed={0.7} className="w-full h-full" />
               </div>
               <div className="flex flex-col leading-tight">
                 <div className="text-[10px] font-display font-semibold tracking-wide truncate max-w-[64px]">

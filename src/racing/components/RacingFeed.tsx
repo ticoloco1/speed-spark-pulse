@@ -69,8 +69,8 @@ export const RacingFeed = () => {
                     )}
                   </div>
                 </div>
-                <div className="w-20 h-12 shrink-0 rounded overflow-hidden surface-2">
-                  <RaceCar color={p.carColor} number={p.number} className="w-full h-full" />
+                <div className="w-24 h-14 shrink-0 rounded overflow-hidden surface-2 flex items-center justify-center p-1">
+                  <RaceCar pilot={p} view="side" speed={0.5} className="w-full h-full" />
                 </div>
               </div>
             </div>

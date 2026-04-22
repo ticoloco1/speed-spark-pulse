@@ -32,10 +32,13 @@ export const PilotHero = ({ pilot }: PilotHeroProps) => {
 
         {/* Big car centerpiece */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[70%] max-w-[700px] opacity-90">
-            <RaceCar color={pilot.carColor} number={pilot.number} className="w-full h-auto" />
+          <div className="w-[78%] max-w-[760px] opacity-95 car-chassis-vibrate-soft">
+            <RaceCar pilot={pilot} view="hero" speed={0.85} boosting className="w-full h-auto" />
           </div>
         </div>
+
+        {/* Asphalt streaming under the car */}
+        <div className="absolute inset-x-0 bottom-0 h-12 asphalt-stream opacity-40 pointer-events-none" />
 
         {/* Top-left identity */}
         <div className="relative z-10 p-5 md:p-6 flex flex-col h-full justify-between">
