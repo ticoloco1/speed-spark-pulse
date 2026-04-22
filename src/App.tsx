@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Racing from "./pages/Racing.tsx";
 import PilotPage from "./pages/PilotPage.tsx";
+import RenderTest from "./pages/RenderTest.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/racing" element={<Racing />} />
+          <Route path="/racing/render-test" element={<RenderTest />} />
           <Route path="/racing/:slug" element={<PilotPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
