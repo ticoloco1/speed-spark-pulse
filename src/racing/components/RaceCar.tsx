@@ -1,23 +1,48 @@
-import { CAR_IMAGES } from "@/racing/cars";
-import type { CarColor } from "@/racing/types";
+import { CarRenderer, type CarView } from "./CarRenderer";
+import type { Pilot } from "@/racing/types";
 import { cn } from "@/lib/utils";
 
 interface RaceCarProps {
-  color: CarColor;
+  pilot?: Pilot;
+  // Legacy props (color/number) kept for back-compat — prefer pilot.
+  color?: string;
   number?: number;
   className?: string;
   flip?: boolean;
+  view?: CarView;
+  speed?: number;
+  braking?: boolean;
+  boosting?: boolean;
 }
 
-export const RaceCar = ({ color, number, className, flip }: RaceCarProps) => {
+/**
+ * Back-compat wrapper. Prefer using <CarRenderer pilot={...} /> directly.
+ * If only a Pilot is passed, the Race Identity Pack drives the visual.
+ */
+export const RaceCar = ({
+  pilot,
+  number,
+  className,
+  flip,
+  view = "side",
+  speed = 0.5,
+  braking = false,
+  boosting = false,
+}: RaceCarProps) => {
+  if (!pilot) {
+    // Minimal fallback for legacy callers without a pilot
+    return <div className={cn("w-full h-full", className)} />;
+  }
   return (
-    <div className={cn("relative", className)}>
-      <img
-        src={CAR_IMAGES[color]}
-        alt={`Race car #${number ?? ""}`}
-        loading="lazy"
-        className={cn("w-full h-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)]", flip && "scale-x-[-1]")}
-      />
-    </div>
+    <CarRenderer
+      pilot={pilot}
+      view={view}
+      speed={speed}
+      braking={braking}
+      boosting={boosting}
+      flip={flip}
+      className={className}
+      ariaLabel={`Race car #${number ?? pilot.number}`}
+    />
   );
 };

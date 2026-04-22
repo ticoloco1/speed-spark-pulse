@@ -71,8 +71,8 @@ const Row = ({ p, highlight }: { p: Pilot; highlight: boolean }) => {
       >
         {p.position}
       </div>
-      <div className="w-12 h-7 shrink-0">
-        <RaceCar color={p.carColor} number={p.number} className="w-full h-full" />
+      <div className="w-14 h-8 shrink-0">
+        <RaceCar pilot={p} view="side" speed={0.5} className="w-full h-full" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">

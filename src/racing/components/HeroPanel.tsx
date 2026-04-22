@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useRaceStore } from "@/racing/engine";
-import heroCar from "@/assets/hero-car.jpg";
-import pilotMarie from "@/assets/pilot-marie.jpg";
+import { CarRenderer } from "./CarRenderer";
 import { Edit3, Fuel, Rocket, Zap, FlaskConical } from "lucide-react";
 
 export const HeroPanel = () => {
@@ -9,35 +8,26 @@ export const HeroPanel = () => {
 
   return (
     <div className="relative surface-1 hud-border rounded-lg overflow-hidden">
-      {/* Background hero car */}
-      <div className="relative h-[420px]">
-        <img
-          src={heroCar}
-          alt="TrustBank #7 hero car"
-          className="absolute inset-0 w-full h-full object-cover"
-          width={1536}
-          height={1024}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-background/80" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background/60" />
+      {/* Background hero */}
+      <div className="relative h-[420px] grid-rays">
+        <div className="absolute inset-0 bg-gradient-to-br from-racing-red/20 via-background to-background" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+
+        {/* Big car centerpiece — same Identity Pack as ticker / boost / cards */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[72%] max-w-[760px] opacity-95 car-chassis-vibrate-soft">
+            <CarRenderer pilot={pilot} view="hero" speed={0.95} boosting className="w-full h-auto" />
+          </div>
+        </div>
+
+        {/* Asphalt streaming under car */}
+        <div className="absolute inset-x-0 bottom-0 h-14 asphalt-stream opacity-40 pointer-events-none" />
 
         {/* Edit button */}
         <button className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 surface-2 hud-border rounded text-[10px] font-display font-bold tracking-wider hover:bg-secondary transition-colors">
           <Edit3 className="w-3 h-3" />
           EDITAR PERFIL
         </button>
-
-        {/* Pilot photo overlay right */}
-        <div className="absolute right-0 bottom-0 top-0 w-[42%] hidden md:block">
-          <img
-            src={pilotMarie}
-            alt={pilot.name}
-            className="absolute right-0 bottom-0 h-full object-cover object-top"
-            width={1024}
-            height={1280}
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-background/60" />
-        </div>
 
         {/* Left content overlay */}
         <div className="absolute inset-0 z-10 p-6 flex flex-col justify-between">

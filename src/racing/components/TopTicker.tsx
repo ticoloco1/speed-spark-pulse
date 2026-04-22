@@ -49,8 +49,8 @@ export const TopTicker = () => {
               <div className="font-display font-bold text-2xl tabular-nums text-foreground/90 leading-none w-7 text-center">
                 {p.position}
               </div>
-              <div className="w-[72px] h-[44px] -my-1 shrink-0">
-                <RaceCar color={p.carColor} number={p.number} className="w-full h-full" />
+              <div className="w-[80px] h-[44px] -my-1 shrink-0 car-chassis-vibrate-soft">
+                <RaceCar pilot={p} view="side" speed={0.85} className="w-full h-full" />
               </div>
               <div className="flex flex-col leading-tight">
                 <div className="text-[11px] font-display font-semibold tracking-wide truncate max-w-[90px]">
