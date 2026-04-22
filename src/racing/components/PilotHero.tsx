@@ -1,6 +1,7 @@
 import type { Pilot } from "@/racing/types";
 import { useRaceStore } from "@/racing/engine";
 import { RaceCar } from "./RaceCar";
+import { PilotPortrait } from "./PilotPortrait";
 import { Fuel, Zap, FlaskConical, Rocket, Trophy, TrendingUp } from "lucide-react";
 
 interface PilotHeroProps {
@@ -30,9 +31,14 @@ export const PilotHero = ({ pilot }: PilotHeroProps) => {
         <div className="absolute inset-0 bg-gradient-to-br from-racing-red/15 via-background to-background" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
 
-        {/* Big car centerpiece */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[78%] max-w-[760px] opacity-95 car-chassis-vibrate-soft">
+        {/* Pilot portrait — left side, anchored to bottom like an official F1 card */}
+        <div className="absolute left-0 bottom-0 w-[42%] sm:w-[36%] md:w-[30%] max-w-[340px] h-[85%] pointer-events-none z-[5]">
+          <PilotPortrait pilot={pilot} className="w-full h-full" />
+        </div>
+
+        {/* Big car centerpiece — shifted right to make room for the pilot */}
+        <div className="absolute inset-0 flex items-center justify-end pr-2 sm:pr-6 md:pr-10 pointer-events-none">
+          <div className="w-[62%] sm:w-[58%] md:w-[55%] max-w-[640px] opacity-95 car-chassis-vibrate-soft">
             <RaceCar pilot={pilot} view="hero" speed={0.85} boosting className="w-full h-auto" />
           </div>
         </div>
