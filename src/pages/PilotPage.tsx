@@ -4,10 +4,10 @@ import { startEngine, useRaceStore } from "@/racing/engine";
 import { RacingHeader } from "@/racing/components/RacingHeader";
 import { TopTicker } from "@/racing/components/TopTicker";
 import { BottomTicker } from "@/racing/components/BottomTicker";
-import { HeroPanel } from "@/racing/components/HeroPanel";
-import { LiveGrid } from "@/racing/components/LiveGrid";
+import { PilotHero } from "@/racing/components/PilotHero";
+import { PilotPosts } from "@/racing/components/PilotPosts";
+import { PilotLeaderboard } from "@/racing/components/PilotLeaderboard";
 import { GaragePanel } from "@/racing/components/GaragePanel";
-import { RacingFeed } from "@/racing/components/RacingFeed";
 import { EventTicker } from "@/racing/components/EventTicker";
 import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
@@ -21,13 +21,21 @@ export default function PilotPage() {
     startEngine();
   }, []);
 
+  useEffect(() => {
+    if (pilot) {
+      document.title = `#${pilot.number} ${pilot.name} — TrustBank Racing`;
+    }
+  }, [pilot]);
+
   if (!pilot) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <RacingHeader />
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <h1 className="font-display font-bold text-3xl">Pilot not found</h1>
-          <Link to="/racing" className="text-racing-red hover:underline">← Back to live broadcast</Link>
+          <Link to="/racing" className="text-racing-red hover:underline">
+            ← Back to live broadcast
+          </Link>
         </div>
       </div>
     );
@@ -42,9 +50,13 @@ export default function PilotPage() {
       </div>
 
       <main className="flex-1 max-w-[1600px] mx-auto w-full p-4 space-y-4">
+        {/* Breadcrumb + slug + weather */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <Link to="/racing" className="flex items-center gap-1.5 text-xs font-display font-bold tracking-widest text-muted-foreground hover:text-foreground">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link
+              to="/racing"
+              className="flex items-center gap-1.5 text-xs font-display font-bold tracking-widest text-muted-foreground hover:text-foreground"
+            >
               <ArrowLeft className="w-3.5 h-3.5" /> LIVE BROADCAST
             </Link>
             <span className="text-muted-foreground">/</span>
@@ -52,20 +64,22 @@ export default function PilotPage() {
               <span className="text-racing-red">#{pilot.number}</span> {pilot.name}
             </h1>
             <span className="text-xs font-mono text-muted-foreground">
-              1.{pilot.slug}.trustbank.xyz
+              {pilot.position}.{pilot.slug}.trustbank.xyz
             </span>
           </div>
           <WeatherHud />
         </div>
 
-        <HeroPanel />
-        <LiveGrid />
+        {/* Pilot hero (profile + current car + telemetry) */}
+        <PilotHero pilot={pilot} />
 
+        {/* Main grid: posts + leaderboard/garage/events */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <RacingFeed />
+          <div className="lg:col-span-2 space-y-4">
+            <PilotPosts pilot={pilot} />
           </div>
           <div className="space-y-4">
+            <PilotLeaderboard pilot={pilot} />
             <EventTicker />
             <GaragePanel />
           </div>
