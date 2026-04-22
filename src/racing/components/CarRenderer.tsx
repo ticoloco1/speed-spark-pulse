@@ -49,7 +49,8 @@ export const CarRenderer = ({
     ? "hero"
     : "side";
 
-  const photo = CAR_PHOTOS[pack.baseCarModelId][baseView];
+  const photoSet = CAR_PHOTOS[pack.baseCarModelId] ?? CAR_PHOTOS.gt_03;
+  const photo = photoSet[baseView] ?? photoSet.side;
 
   // Color tint via CSS filters — hue rotation toward primary color, with
   // saturation/contrast/brightness boosts for richer paint reading.
