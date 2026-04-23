@@ -11,6 +11,7 @@ import { LiveGrid } from "@/racing/components/LiveGrid";
 import { GaragePanel } from "@/racing/components/GaragePanel";
 import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
+import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 
 export default function Racing() {
   useEffect(() => {
@@ -20,8 +21,8 @@ export default function Racing() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <RacingHeader />
+      <InfiniteSideTrack side="left" />
 
-      {/* Top Ticker — elite cars */}
       <TopTicker />
 
       {/* Sponsors */}
