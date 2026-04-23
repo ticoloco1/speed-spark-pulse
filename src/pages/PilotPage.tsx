@@ -15,6 +15,7 @@ import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { ArrowLeft } from "lucide-react";
 import { db, dbPilotToEngine, type DbPilot } from "@/racing/db";
 import type { Pilot } from "@/racing/types";
+import { ClaimPilotButton } from "@/racing/components/ClaimPilotButton";
 
 export default function PilotPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -97,6 +98,8 @@ export default function PilotPage() {
         </div>
 
         <PilotHero pilot={pilot} />
+
+        <ClaimPilotButton pilot={pilot} isAvailable={!loading && !dbPilot} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
