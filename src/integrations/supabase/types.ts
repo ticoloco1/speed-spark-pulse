@@ -14,7 +14,175 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pilot_posts: {
+        Row: {
+          author_id: string | null
+          comments: number
+          created_at: string
+          cta: string | null
+          id: string
+          image_url: string | null
+          kind: string
+          likes: number
+          pilot_id: string
+          sponsor: string | null
+          text: string
+        }
+        Insert: {
+          author_id?: string | null
+          comments?: number
+          created_at?: string
+          cta?: string | null
+          id?: string
+          image_url?: string | null
+          kind?: string
+          likes?: number
+          pilot_id: string
+          sponsor?: string | null
+          text: string
+        }
+        Update: {
+          author_id?: string | null
+          comments?: number
+          created_at?: string
+          cta?: string | null
+          id?: string
+          image_url?: string | null
+          kind?: string
+          likes?: number
+          pilot_id?: string
+          sponsor?: string | null
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_posts_pilot_id_fkey"
+            columns: ["pilot_id"]
+            isOneToOne: false
+            referencedRelation: "pilots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilot_stats: {
+        Row: {
+          best_lap: string
+          earnings: number
+          level: number
+          pilot_id: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          best_lap?: string
+          earnings?: number
+          level?: number
+          pilot_id: string
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          best_lap?: string
+          earnings?: number
+          level?: number
+          pilot_id?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pilot_stats_pilot_id_fkey"
+            columns: ["pilot_id"]
+            isOneToOne: true
+            referencedRelation: "pilots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pilots: {
+        Row: {
+          bio: string | null
+          car_color: string
+          car_model: string
+          claimed_from_ai: string | null
+          country: string
+          created_at: string
+          id: string
+          is_ai: boolean
+          name: string
+          number: number
+          owner_id: string | null
+          photo_url: string | null
+          slug: string
+          sponsor: string
+          team: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          car_color?: string
+          car_model?: string
+          claimed_from_ai?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          is_ai?: boolean
+          name: string
+          number: number
+          owner_id?: string | null
+          photo_url?: string | null
+          slug: string
+          sponsor?: string
+          team?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          car_color?: string
+          car_model?: string
+          claimed_from_ai?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          is_ai?: boolean
+          name?: string
+          number?: number
+          owner_id?: string | null
+          photo_url?: string | null
+          slug?: string
+          sponsor?: string
+          team?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
