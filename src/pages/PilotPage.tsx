@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { startEngine, useRaceStore } from "@/racing/engine";
 import { RacingHeader } from "@/racing/components/RacingHeader";
@@ -11,30 +11,56 @@ import { GaragePanel } from "@/racing/components/GaragePanel";
 import { EventTicker } from "@/racing/components/EventTicker";
 import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
+import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { ArrowLeft } from "lucide-react";
+import { db, dbPilotToEngine, type DbPilot } from "@/racing/db";
+import type { Pilot } from "@/racing/types";
 
 export default function PilotPage() {
   const { slug } = useParams<{ slug: string }>();
-  const pilot = useRaceStore((s) => s.pilots.find((p) => p.slug === slug));
+  const aiPilot = useRaceStore((s) => s.pilots.find((p) => p.slug === slug));
+  const [dbPilot, setDbPilot] = useState<DbPilot | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { startEngine(); }, []);
 
   useEffect(() => {
-    startEngine();
-  }, []);
+    if (!slug) return;
+    setLoading(true);
+    db.getPilotBySlug(slug)
+      .then(setDbPilot)
+      .catch(() => setDbPilot(null))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  // Resolve which pilot to display: DB user-owned takes precedence over AI fallback
+  const pilot: Pilot | null = dbPilot
+    ? dbPilotToEngine(dbPilot, aiPilot?.position ?? 50)
+    : aiPilot ?? null;
 
   useEffect(() => {
-    if (pilot) {
-      document.title = `#${pilot.number} ${pilot.name} — TrustBank Racing`;
-    }
+    if (pilot) document.title = `#${pilot.number} ${pilot.name} — TrustBank Racing`;
   }, [pilot]);
+
+  if (loading && !aiPilot) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <RacingHeader />
+        <div className="flex-1 flex items-center justify-center text-xs tracking-[0.2em] font-display font-bold text-muted-foreground">
+          CARREGANDO PILOTO…
+        </div>
+      </div>
+    );
+  }
 
   if (!pilot) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <RacingHeader />
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
-          <h1 className="font-display font-bold text-3xl">Pilot not found</h1>
+          <h1 className="font-display font-bold text-3xl">Piloto não encontrado</h1>
           <Link to="/racing" className="text-racing-red hover:underline">
-            ← Back to live broadcast
+            ← Voltar para o broadcast
           </Link>
         </div>
       </div>
@@ -44,13 +70,13 @@ export default function PilotPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <RacingHeader />
+      <InfiniteSideTrack side="left" />
       <TopTicker />
       <div className="border-b border-border surface-1">
         <SponsorStrip variant="top" />
       </div>
 
-      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4 space-y-4">
-        {/* Breadcrumb + slug + weather */}
+      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4 space-y-4 xl:pl-24">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3 flex-wrap">
             <Link
@@ -70,13 +96,16 @@ export default function PilotPage() {
           <WeatherHud />
         </div>
 
-        {/* Pilot hero (profile + current car + telemetry) */}
         <PilotHero pilot={pilot} />
 
-        {/* Main grid: posts + leaderboard/garage/events */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
-            <PilotPosts pilot={pilot} />
+            <PilotPosts
+              pilot={pilot}
+              pilotDbId={dbPilot?.id}
+              ownerId={dbPilot?.owner_id}
+              photoUrl={dbPilot?.photo_url}
+            />
           </div>
           <div className="space-y-4">
             <PilotLeaderboard pilot={pilot} />
