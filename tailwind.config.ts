@@ -123,6 +123,10 @@ export default {
           "0%": { backgroundColor: "hsl(var(--racing-red) / 0.25)" },
           "100%": { backgroundColor: "transparent" },
         },
+        "track-scroll-vertical": {
+          from: { transform: "translateY(0)" },
+          to: { transform: "translateY(-66.6667%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -136,6 +140,7 @@ export default {
         "boost-pulse": "boost-pulse 1.6s ease-out infinite",
         "count-up": "count-up 0.4s ease-out",
         "flash-event": "flash-event 1.2s ease-out",
+        "track-scroll-vertical": "track-scroll-vertical 80s linear infinite",
       },
     },
   },
