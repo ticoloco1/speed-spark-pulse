@@ -277,7 +277,25 @@ export default function PilotSetup() {
           <div className="text-[10px] tracking-[0.2em] font-display font-bold text-muted-foreground">PRÉ-VISUALIZAÇÃO</div>
 
           <div className="aspect-[16/9] surface-2 rounded overflow-hidden grid place-items-center p-3">
-            <CarRenderer color={carColor} model={carModel as any} view="hero" className="w-full h-full" />
+            <CarRenderer
+              pilot={{
+                id: "preview",
+                slug: "preview",
+                name: name || "Preview",
+                number,
+                country,
+                team,
+                carColor,
+                sponsor,
+                bestLap: "2:42.000",
+                position: 1,
+                isAI: false,
+                earnings: 0,
+                level: 1,
+              }}
+              view="hero"
+              className="w-full h-full"
+            />
           </div>
 
           <div className="flex items-center gap-3">

@@ -47,7 +47,7 @@ export const InfiniteSideTrack = ({ side = "left" }: InfiniteSideTrackProps) => 
                 title={`#${p.number} ${p.name}`}
               >
                 <div className="w-16 h-10 surface-2 rounded overflow-hidden border border-border group-hover:border-racing-red flex items-center justify-center p-0.5">
-                  <CarRenderer color={ep.carColor} model={p.car_model as any} view="top" className="w-full h-full" />
+                  <CarRenderer pilot={ep} view="top" className="w-full h-full" />
                 </div>
                 <div className="text-[9px] font-display font-bold text-racing-red leading-none">#{p.number}</div>
                 <div className="text-[9px] font-mono text-muted-foreground truncate w-full text-center leading-none">
