@@ -13,6 +13,7 @@ import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
 import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { InterviewTV } from "@/racing/components/InterviewTV";
+import { DecisionLog } from "@/racing/components/DecisionLog";
 
 export default function Racing() {
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Racing() {
       </div>
 
       {/* Main 3-column layout */}
-      <main className="flex-1 grid grid-cols-12 gap-3 p-3 xl:pl-28">
+      <main className="flex-1 grid grid-cols-12 gap-3 p-3 xl:pl-20">
         {/* Left: Boost Track */}
         <div className="col-span-12 md:col-span-3 lg:col-span-2">
           <div className="sticky top-3 h-[calc(100vh-260px)] min-h-[600px]">
@@ -75,6 +76,7 @@ export default function Racing() {
         {/* Right: secondary HUD column */}
         <div className="hidden lg:block col-span-12 lg:col-span-3 space-y-3">
           <InterviewTV />
+          <DecisionLog />
           <ChampionshipPanel />
           <NftDropPanel />
         </div>
