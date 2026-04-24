@@ -12,6 +12,7 @@ import { GaragePanel } from "@/racing/components/GaragePanel";
 import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
 import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
+import { InterviewTV } from "@/racing/components/InterviewTV";
 
 export default function Racing() {
   useEffect(() => {
@@ -73,12 +74,7 @@ export default function Racing() {
 
         {/* Right: secondary HUD column */}
         <div className="hidden lg:block col-span-12 lg:col-span-3 space-y-3">
-          <div className="surface-1 hud-border rounded-md p-3">
-            <div className="text-[10px] tracking-[0.2em] font-display font-bold text-muted-foreground mb-2">
-              RANKING DAILY · TOP 5
-            </div>
-            <Top5 />
-          </div>
+          <InterviewTV />
           <ChampionshipPanel />
           <NftDropPanel />
         </div>
@@ -91,29 +87,6 @@ export default function Racing() {
       <div className="border-t border-border surface-1">
         <SponsorStrip variant="bottom" />
       </div>
-    </div>
-  );
-}
-
-function Top5() {
-  return (
-    <div className="space-y-1.5">
-      {[
-        { p: 1, n: "MARIE", t: "TrustBank", s: 25430 },
-        { p: 2, n: "CRYPTOX", t: "Apex", s: 24120 },
-        { p: 3, n: "SPEEDKING", t: "Velocity", s: 22340 },
-        { p: 4, n: "ALEX99", t: "Phantom", s: 19880 },
-        { p: 5, n: "FASTLIFE", t: "Nitro", s: 18210 },
-      ].map((r) => (
-        <div key={r.n} className="flex items-center gap-2 surface-2 rounded px-2 py-1.5 text-xs">
-          <span className="font-display font-bold w-5 text-center">{r.p}</span>
-          <div className="flex-1 min-w-0">
-            <div className="font-display font-bold truncate">{r.n}</div>
-            <div className="text-[10px] text-muted-foreground truncate">{r.t}</div>
-          </div>
-          <div className="text-racing-green font-mono font-bold tabular-nums">${(r.s / 1000).toFixed(1)}k</div>
-        </div>
-      ))}
     </div>
   );
 }

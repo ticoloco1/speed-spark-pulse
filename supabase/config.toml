@@ -1,1 +1,7 @@
 project_id = "uuosrcawejyhpgoxfiqn"
+
+[functions.race-commentary]
+verify_jwt = false
+
+[functions.pilot-interview]
+verify_jwt = false
