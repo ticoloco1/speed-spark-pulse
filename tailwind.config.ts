@@ -127,6 +127,10 @@ export default {
           from: { transform: "translateY(0)" },
           to: { transform: "translateY(-66.6667%)" },
         },
+        "track-scroll-vertical-rev": {
+          from: { transform: "translateY(-66.6667%)" },
+          to: { transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -141,6 +145,7 @@ export default {
         "count-up": "count-up 0.4s ease-out",
         "flash-event": "flash-event 1.2s ease-out",
         "track-scroll-vertical": "track-scroll-vertical 80s linear infinite",
+        "track-scroll-vertical-rev": "track-scroll-vertical-rev 4s linear infinite",
       },
     },
   },
