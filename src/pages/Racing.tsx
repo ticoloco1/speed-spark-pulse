@@ -12,6 +12,7 @@ import { GaragePanel } from "@/racing/components/GaragePanel";
 import { SponsorStrip } from "@/racing/components/SponsorStrip";
 import { WeatherHud } from "@/racing/components/WeatherHud";
 import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
+import { InterviewTV } from "@/racing/components/InterviewTV";
 
 export default function Racing() {
   useEffect(() => {
@@ -73,12 +74,7 @@ export default function Racing() {
 
         {/* Right: secondary HUD column */}
         <div className="hidden lg:block col-span-12 lg:col-span-3 space-y-3">
-          <div className="surface-1 hud-border rounded-md p-3">
-            <div className="text-[10px] tracking-[0.2em] font-display font-bold text-muted-foreground mb-2">
-              RANKING DAILY · TOP 5
-            </div>
-            <Top5 />
-          </div>
+          <InterviewTV />
           <ChampionshipPanel />
           <NftDropPanel />
         </div>
