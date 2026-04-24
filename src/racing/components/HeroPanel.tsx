@@ -56,7 +56,7 @@ export const HeroPanel = () => {
 
             {/* Big car centerpiece */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[72%] max-w-[760px] opacity-95 car-chassis-vibrate-soft">
+              <div className="w-[78%] max-w-[820px] opacity-95 car-chassis-vibrate-soft">
                 <CarRenderer pilot={heroPilot} view="hero" speed={0.95} boosting className="w-full h-auto" />
               </div>
             </div>
@@ -108,24 +108,18 @@ export const HeroPanel = () => {
             </div>
           </div>
 
-          {/* Right HUD column */}
-          <div className="hidden lg:flex absolute top-[60px] right-6 z-20 flex-col gap-2 w-[260px]">
-            <Meter icon={<Fuel className="w-3.5 h-3.5 text-racing-green" />} label="COMBUSTÍVEL" pct={72} value="36.0 / 50.0 L" color="green" />
-            <Meter icon={<Zap className="w-3.5 h-3.5 text-racing-amber" />} label="ENERGIA" pct={48} value="24.0 / 50.0 kWh" color="amber" />
-            <Meter icon={<FlaskConical className="w-3.5 h-3.5 text-racing-purple" />} label="NITRO" pct={65} value="3.2 / 5.0 kg" color="purple" />
-
-            <div className="surface-2 hud-border rounded-md p-3 mt-1">
-              <div className="text-[10px] text-muted-foreground tracking-widest font-display">PATROCÍNIO PRINCIPAL</div>
-              <div className="font-display font-bold text-lg mt-0.5">{heroPilot.sponsor.toUpperCase()}</div>
-            </div>
-
-            <div className="surface-2 hud-border rounded-md p-3 flex items-center gap-3">
-              <div className="w-9 h-9 rounded bg-racing-red/15 flex items-center justify-center shrink-0">
-                <Rocket className="w-4 h-4 text-racing-red" />
-              </div>
-              <div className="flex-1">
-                <div className="text-[10px] text-muted-foreground tracking-widest font-display">BOOST DISPONÍVEL</div>
-                <div className="text-sm font-display font-bold">3 BOOSTS</div>
+          {/* Thin meters column BELOW the hero photo */}
+          <div className="border-t border-border bg-background/60 px-3 py-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <SlimMeter icon={<Fuel className="w-3 h-3 text-racing-green" />} label="FUEL" pct={72} value="36/50L" color="green" />
+              <SlimMeter icon={<Zap className="w-3 h-3 text-racing-amber" />} label="ENERGY" pct={48} value="24/50kWh" color="amber" />
+              <SlimMeter icon={<FlaskConical className="w-3 h-3 text-racing-purple" />} label="NITRO" pct={65} value="3.2/5kg" color="purple" />
+              <div className="surface-2 hud-border rounded px-2 py-1.5 flex items-center gap-2">
+                <Rocket className="w-3 h-3 text-racing-red shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[8px] text-muted-foreground tracking-widest font-display leading-none">BOOSTS</div>
+                  <div className="text-[11px] font-display font-bold leading-tight truncate">3 · {heroPilot.sponsor.slice(0, 8).toUpperCase()}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -181,6 +175,29 @@ const Meter = ({
         <div className={`h-full ${bar}`} style={{ width: `${pct}%` }} />
       </div>
       <div className="text-[10px] text-muted-foreground font-mono mt-1 text-right tabular-nums">{value}</div>
+    </div>
+  );
+};
+
+const SlimMeter = ({
+  icon, label, pct, value, color,
+}: {
+  icon: React.ReactNode; label: string; pct: number; value: string; color: "green" | "amber" | "purple";
+}) => {
+  const bar = color === "green" ? "bg-racing-green" : color === "amber" ? "bg-racing-amber" : "bg-racing-purple";
+  return (
+    <div className="surface-2 hud-border rounded px-2 py-1.5">
+      <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center gap-1 min-w-0">
+          {icon}
+          <span className="text-[8px] text-foreground/80 font-display tracking-widest truncate">{label}</span>
+        </div>
+        <span className="font-mono text-[10px] font-bold tabular-nums">{pct}%</span>
+      </div>
+      <div className="mt-1 h-1 bg-border rounded overflow-hidden">
+        <div className={`h-full ${bar}`} style={{ width: `${pct}%` }} />
+      </div>
+      <div className="text-[8px] text-muted-foreground font-mono mt-0.5 text-right tabular-nums leading-none">{value}</div>
     </div>
   );
 };
