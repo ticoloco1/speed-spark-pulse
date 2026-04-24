@@ -91,29 +91,6 @@ export default function Racing() {
   );
 }
 
-function Top5() {
-  return (
-    <div className="space-y-1.5">
-      {[
-        { p: 1, n: "MARIE", t: "TrustBank", s: 25430 },
-        { p: 2, n: "CRYPTOX", t: "Apex", s: 24120 },
-        { p: 3, n: "SPEEDKING", t: "Velocity", s: 22340 },
-        { p: 4, n: "ALEX99", t: "Phantom", s: 19880 },
-        { p: 5, n: "FASTLIFE", t: "Nitro", s: 18210 },
-      ].map((r) => (
-        <div key={r.n} className="flex items-center gap-2 surface-2 rounded px-2 py-1.5 text-xs">
-          <span className="font-display font-bold w-5 text-center">{r.p}</span>
-          <div className="flex-1 min-w-0">
-            <div className="font-display font-bold truncate">{r.n}</div>
-            <div className="text-[10px] text-muted-foreground truncate">{r.t}</div>
-          </div>
-          <div className="text-racing-green font-mono font-bold tabular-nums">${(r.s / 1000).toFixed(1)}k</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function ChampionshipPanel() {
   return (
     <div className="surface-1 hud-border rounded-md p-3">
