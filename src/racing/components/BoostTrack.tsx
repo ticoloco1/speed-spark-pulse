@@ -38,12 +38,7 @@ export const BoostTrack = () => {
   const next = boosts[1];
   const pilot = top ? pilots.find((p) => p.id === top.pilotId) : pilots[0];
 
-  // Animated car position (vertical lap)
-  const [carPos, setCarPos] = useState(10);
-  useEffect(() => {
-    const id = setInterval(() => setCarPos((p) => (p >= 88 ? 10 : p + 0.6)), 40);
-    return () => clearInterval(id);
-  }, []);
+  // Car flows continuously from bottom to top via CSS animation (no jumping).
 
   // ── Auction state ─────────────────────────────────────────────────────────
   const [bids, setBids] = useState<AuctionBid[]>(() => [
