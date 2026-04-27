@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useRaceStore } from "@/racing/engine";
 import { CarRenderer } from "./CarRenderer";
-import { Edit3, Fuel, Rocket, Zap, FlaskConical, Car, Mic } from "lucide-react";
+import { Edit3, Fuel, Rocket, Zap, FlaskConical, Car, Mic, Gauge } from "lucide-react";
 import { CommentaryPanel } from "./CommentaryPanel";
 import { PilotAdminControls } from "./PilotAdminControls";
+import { CockpitView } from "./CockpitView";
 import { useAuth } from "@/hooks/useAuth";
 import { db, dbPilotToEngine, type DbPilot } from "@/racing/db";
 
-type Tab = "car" | "anchor";
+type Tab = "car" | "anchor" | "cockpit";
 
 export const HeroPanel = () => {
   const enginePilot = useRaceStore((s) => s.pilots[0]);
