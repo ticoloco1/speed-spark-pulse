@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRaceStore } from "@/racing/engine";
 import { Link } from "react-router-dom";
 import { CarRenderer } from "./CarRenderer";
-import { Gavel, Crown, ExternalLink } from "lucide-react";
+import { Gavel, Crown, ExternalLink, Building2, Trophy, Clock } from "lucide-react";
 import trackBg from "@/assets/track-bg.jpg";
 
 function fmt(s: number) {
@@ -11,85 +11,150 @@ function fmt(s: number) {
   return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
-const SPONSOR_BIDDERS = [
-  "BMW M PERFORMANCE", "PORSCHE MOTORSPORT", "RED BULL RACING",
-  "MONSTER ENERGY", "SHELL V-POWER", "PIRELLI P-ZERO",
-  "PETRONAS SYNTIUM", "MOBIL 1", "TAG HEUER",
+// Scuderias (empresas) que alugam o slot e disputam o leilão
+const SCUDERIAS = [
+  { brand: "BMW M PERFORMANCE", scuderia: "Scuderia Bavaria", color: "racing-blue" },
+  { brand: "PORSCHE MOTORSPORT", scuderia: "Stuttgart Racing", color: "racing-amber" },
+  { brand: "RED BULL RACING", scuderia: "Energy Bulls GP", color: "racing-red" },
+  { brand: "MONSTER ENERGY", scuderia: "Claw Motorsport", color: "racing-green" },
+  { brand: "SHELL V-POWER", scuderia: "Helix Racing Team", color: "racing-amber" },
+  { brand: "PIRELLI P-ZERO", scuderia: "Black Wall Racing", color: "racing-red" },
+  { brand: "PETRONAS SYNTIUM", scuderia: "Mercato GP", color: "racing-green" },
+  { brand: "MOBIL 1", scuderia: "Pegasus Racing", color: "racing-blue" },
+  { brand: "TAG HEUER", scuderia: "Carrera Squad", color: "racing-amber" },
 ];
 
 interface AuctionBid {
-  sponsor: string;
+  scuderia: string;
+  brand: string;
+  color: string;
   amount: number;
   at: number;
+  pilotId: string;
 }
 
+interface AuctionWinner {
+  brand: string;
+  scuderia: string;
+  color: string;
+  amount: number;
+  pilotId: string;
+  startedAt: number;
+  durationSec: number; // tempo de tela comprado
+}
+
+const SLOT_DURATION = 25; // 25s de tela por leilão vencido
+
 /**
- * Live boost auction lane.
- * - Sponsors place bids in real time (top bid sponsors the leading pilot's car).
- * - Every 3 minutes a 15s "spotlight window" highlights the winning car
- *   with extra speed / fanfare across the full lane.
- * - The car visual ALWAYS comes from the same Race Identity Pack
- *   (no separate PNG anywhere).
+ * Pista do meio = LEILÃO AO VIVO de tempo de tela.
+ * - Scuderias (empresas) dão lances para que SEU piloto + marca apareçam aqui.
+ * - O maior lance vence o slot atual (25s) e mostra o carro com a marca por cima.
+ * - Próximos vencedores entram na FILA e aparecem em sequência.
+ * - Volta mais rápida do piloto destacado é exibida em tempo real.
  */
 export const BoostTrack = () => {
-  const boosts = useRaceStore((s) => s.boosts);
   const pilots = useRaceStore((s) => s.pilots);
-  const top = boosts[0];
-  const next = boosts[1];
-  const pilot = top ? pilots.find((p) => p.id === top.pilotId) : pilots[0];
 
-  // Car flows continuously from bottom to top via CSS animation (no jumping).
+  // ── Vencedor atual + fila ────────────────────────────────────────────────
+  const [currentWinner, setCurrentWinner] = useState<AuctionWinner>(() => {
+    const s = SCUDERIAS[0];
+    return {
+      ...s,
+      amount: 5400,
+      pilotId: pilots[0]?.id ?? "p_1",
+      startedAt: Date.now(),
+      durationSec: SLOT_DURATION,
+    };
+  });
+  const [queue, setQueue] = useState<AuctionWinner[]>([]);
 
-  // ── Auction state ─────────────────────────────────────────────────────────
-  const [bids, setBids] = useState<AuctionBid[]>(() => [
-    { sponsor: "BMW M PERFORMANCE", amount: 5000, at: Date.now() - 4000 },
-    { sponsor: "PORSCHE MOTORSPORT", amount: 5400, at: Date.now() - 2000 },
-  ]);
+  // Lances do leilão em andamento (próximo slot)
+  const [bids, setBids] = useState<AuctionBid[]>(() => {
+    const s1 = SCUDERIAS[1];
+    const s2 = SCUDERIAS[2];
+    return [
+      { ...s1, amount: 6200, at: Date.now() - 2000, pilotId: pilots[1]?.id ?? "p_2" },
+      { ...s2, amount: 5800, at: Date.now() - 4000, pilotId: pilots[2]?.id ?? "p_3" },
+    ];
+  });
 
-  // New bid every 4-9s
+  // ── Countdown do slot atual ──────────────────────────────────────────────
+  const [slotRemaining, setSlotRemaining] = useState(SLOT_DURATION);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlotRemaining((r) => {
+        if (r <= 1) {
+          // Slot termina: promover o maior lance da fila
+          setQueue((q) => {
+            if (q.length === 0) return q;
+            const [next, ...rest] = q;
+            setCurrentWinner({ ...next, startedAt: Date.now() });
+            return rest;
+          });
+          return SLOT_DURATION;
+        }
+        return r - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // ── Novos lances (a cada 3-7s) ───────────────────────────────────────────
   useEffect(() => {
     let alive = true;
     function schedule() {
-      const delay = 4000 + Math.random() * 5000;
+      const delay = 3000 + Math.random() * 4000;
       setTimeout(() => {
         if (!alive) return;
         setBids((prev) => {
-          const last = prev[0]?.amount ?? 5000;
-          const bump = 200 + Math.floor(Math.random() * 1800);
-          const sponsor = SPONSOR_BIDDERS[Math.floor(Math.random() * SPONSOR_BIDDERS.length)];
-          return [{ sponsor, amount: last + bump, at: Date.now() }, ...prev].slice(0, 6);
+          const top = prev[0]?.amount ?? currentWinner.amount;
+          const bump = 300 + Math.floor(Math.random() * 2200);
+          const sc = SCUDERIAS[Math.floor(Math.random() * SCUDERIAS.length)];
+          const pilot = pilots[Math.floor(Math.random() * pilots.length)];
+          const next: AuctionBid = {
+            ...sc,
+            amount: top + bump,
+            at: Date.now(),
+            pilotId: pilot?.id ?? "p_1",
+          };
+          return [next, ...prev].slice(0, 8);
         });
         schedule();
       }, delay);
     }
     schedule();
     return () => { alive = false; };
-  }, []);
+  }, [pilots, currentWinner.amount]);
 
-  const leadBid = bids[0];
-
-  // ── Spotlight window: 15s open every 3 min (180s) ─────────────────────────
-  const [spotlight, setSpotlight] = useState(false);
-  const [spotlightCountdown, setSpotlightCountdown] = useState(180);
+  // Promover maior lance para fila quando atinge novo recorde
   useEffect(() => {
-    const id = setInterval(() => {
-      setSpotlightCountdown((c) => {
-        if (c <= 1) {
-          setSpotlight(true);
-          // close after 15s
-          setTimeout(() => setSpotlight(false), 15000);
-          return 180;
-        }
-        return c - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
+    const top = bids[0];
+    if (!top) return;
+    setQueue((q) => {
+      // Evita duplicar a mesma entrada
+      if (q.some((x) => x.brand === top.brand && x.amount === top.amount)) return q;
+      const winner: AuctionWinner = {
+        brand: top.brand,
+        scuderia: top.scuderia,
+        color: top.color,
+        amount: top.amount,
+        pilotId: top.pilotId,
+        startedAt: 0,
+        durationSec: SLOT_DURATION,
+      };
+      // Mantém fila ordenada por valor (maior primeiro), até 4 vencedores
+      const merged = [...q, winner].sort((a, b) => b.amount - a.amount).slice(0, 4);
+      return merged;
+    });
+  }, [bids]);
 
-  const isSafetyCar = top?.isSafetyCar ?? false;
+  const pilot = useMemo(
+    () => pilots.find((p) => p.id === currentWinner.pilotId) ?? pilots[0],
+    [pilots, currentWinner.pilotId]
+  );
 
-  // Speed of the showcased car — boosted during spotlight or safety car (slower)
-  const carSpeed = isSafetyCar ? 0.25 : spotlight ? 1 : 0.85;
+  const slotProgress = ((SLOT_DURATION - slotRemaining) / SLOT_DURATION) * 100;
+  const leadBid = bids[0];
 
   return (
     <aside className="relative w-full h-full surface-1 hud-border rounded-md overflow-hidden flex flex-col">
@@ -101,18 +166,7 @@ export const BoostTrack = () => {
       <div className="absolute top-0 bottom-0 left-1.5 w-[5px] bg-gradient-to-b from-racing-red via-white to-racing-red opacity-60" style={{ backgroundSize: "100% 28px" }} />
       <div className="absolute top-0 bottom-0 right-1.5 w-[5px] bg-gradient-to-b from-white via-racing-red to-white opacity-60" style={{ backgroundSize: "100% 28px" }} />
 
-      {/* Spotlight overlay */}
-      {spotlight && (
-        <div className="absolute inset-0 z-20 pointer-events-none">
-          <div className="absolute inset-0 bg-racing-amber/10" />
-          <div
-            className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-racing-amber/40 to-transparent"
-            style={{ animation: "spotlight-sweep 1.4s linear infinite" }}
-          />
-        </div>
-      )}
-
-      {/* ── Header: live auction status ───────────────────────────────────── */}
+      {/* ── Header: leilão ao vivo ───────────────────────────────────────── */}
       <div className="relative z-10 px-3 pt-3 pb-2 border-b border-border/60">
         <div className="flex items-center justify-between gap-2 mb-1">
           <div className="flex items-center gap-1.5">
@@ -121,55 +175,64 @@ export const BoostTrack = () => {
               LEILÃO AO VIVO
             </span>
           </div>
-          <span className={`live-dot ${isSafetyCar ? "siren-light" : ""}`} />
+          <span className="live-dot" />
         </div>
-        <div className="flex items-baseline justify-between">
-          <div>
-            <div className="text-[9px] text-muted-foreground font-display tracking-wider">LANCE LÍDER</div>
-            <div className="font-display font-bold text-2xl text-racing-amber tabular-nums leading-none">
-              ${leadBid.amount.toLocaleString()}
-            </div>
+
+        {/* Slot vencedor atual */}
+        <div className="surface-2 rounded px-2 py-1.5 border border-racing-amber/40">
+          <div className="flex items-center justify-between text-[9px] font-display tracking-widest mb-0.5">
+            <span className="text-racing-amber font-bold flex items-center gap-1">
+              <Crown className="w-2.5 h-2.5" /> NO AR AGORA
+            </span>
+            <span className="text-foreground font-mono tabular-nums">
+              <Clock className="w-2.5 h-2.5 inline mr-0.5" />
+              {slotRemaining}s
+            </span>
           </div>
-          <div className="text-right">
-            <div className="text-[9px] text-muted-foreground font-display tracking-wider">SPOTLIGHT</div>
-            <div className="font-mono text-sm tabular-nums text-foreground">
-              {spotlight ? <span className="text-racing-red font-bold">AO VIVO</span> : fmt(spotlightCountdown)}
-            </div>
+          <div className="font-display font-bold text-sm text-foreground truncate leading-tight">
+            {currentWinner.brand}
           </div>
-        </div>
-        <div
-          key={leadBid.at}
-          className="text-[10px] font-display font-bold text-foreground truncate mt-0.5"
-          style={{ animation: "auction-bid 0.5s ease-out" }}
-        >
-          <Crown className="w-3 h-3 inline mr-1 text-racing-amber" />
-          {leadBid.sponsor}
+          <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+            <Building2 className="w-2.5 h-2.5" /> {currentWinner.scuderia}
+          </div>
+          <div className="font-mono font-bold text-racing-amber tabular-nums text-xs mt-0.5">
+            ${currentWinner.amount.toLocaleString()}
+          </div>
+          {/* Barra de tempo restante */}
+          <div className="mt-1 h-0.5 bg-border rounded overflow-hidden">
+            <div
+              className="h-full bg-racing-amber transition-all duration-1000"
+              style={{ width: `${slotProgress}%` }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* ── Slug header for the patronaged pilot ─────────────────────────── */}
+      {/* ── Header do piloto patrocinado ─────────────────────────────────── */}
       {pilot && (
         <Link
           to={`/racing/${pilot.slug}`}
           className="relative z-10 mx-2 mt-2 px-2 py-2 rounded surface-2 hud-border block hover:bg-secondary transition-colors"
         >
           <div className="flex items-baseline gap-1 text-[10px] font-mono text-muted-foreground">
-            <span className="font-display font-bold text-racing-red">{pilot.position}</span>
-            <span>.{pilot.slug}.trustbank.xyz</span>
+            <span className="font-display font-bold text-racing-red">#{pilot.number}</span>
+            <span className="font-display font-bold text-racing-red">P{pilot.position}</span>
             <ExternalLink className="w-2.5 h-2.5 ml-auto" />
           </div>
           <div className="font-display font-bold text-sm text-foreground truncate mt-0.5">
             {pilot.name}
           </div>
-          <div className="text-[10px] text-muted-foreground truncate">
-            patrocinado por <span className="text-racing-amber font-bold">{leadBid.sponsor}</span>
+          <div className="flex items-center justify-between text-[10px] mt-0.5">
+            <span className="text-muted-foreground truncate">
+              <Trophy className="w-2.5 h-2.5 inline mr-0.5 text-racing-amber" />
+              Volta: <span className="font-mono text-foreground">{pilot.bestLap}</span>
+            </span>
           </div>
         </Link>
       )}
 
-      {/* ── Vertical race lane ────────────────────────────────────────────── */}
-      <div className="relative z-10 flex-1 mx-2 my-2 rounded-md surface-2 border border-border overflow-hidden min-h-[260px]">
-        {/* Asphalt with moving lane stripes */}
+      {/* ── Pista vertical com o carro do vencedor ───────────────────────── */}
+      <div className="relative z-10 flex-1 mx-2 my-2 rounded-md surface-2 border border-border overflow-hidden min-h-[220px]">
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
         <div
           className="absolute left-1/2 top-0 bottom-0 w-1 -translate-x-1/2"
@@ -179,72 +242,90 @@ export const BoostTrack = () => {
             backgroundSize: "100% 46px",
           }}
         />
-        {/* Side lane lines */}
         <div className="absolute left-3 top-0 bottom-0 w-px bg-white/10" />
         <div className="absolute right-3 top-0 bottom-0 w-px bg-white/10" />
 
-        {/* Car flowing up the lane — bottom → top in ~8s, then re-enters from bottom */}
+        {/* Marca patrocinadora SOBRE o carro (super visível) */}
+        <div className="absolute top-2 left-2 right-2 z-10 surface-elev/90 backdrop-blur rounded px-2 py-1 border border-racing-amber/60 animate-fade-in">
+          <div className="text-[9px] font-display font-bold tracking-widest text-racing-amber truncate">
+            🏁 {currentWinner.brand}
+          </div>
+        </div>
+
+        {/* Carro do piloto vencedor — fluxo contínuo de baixo para cima */}
         {pilot && (
           <div
+            key={currentWinner.startedAt}
             className="absolute left-0 right-0 bottom-0 flex justify-center pointer-events-none animate-car-run-up-lane car-chassis-vibrate"
-            style={{
-              animationDuration: spotlight ? "5s" : isSafetyCar ? "14s" : "8s",
-            }}
+            style={{ animationDuration: "8s" }}
           >
             <div style={{ width: "60%", maxWidth: "120px" }}>
-              <CarRenderer
-                pilot={pilot}
-                view="top"
-                speed={carSpeed}
-                boosting={spotlight}
-                braking={isSafetyCar}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Spotlight window banner */}
-        {spotlight && (
-          <div className="absolute top-2 left-2 right-2 z-10 surface-elev/90 backdrop-blur rounded px-2 py-1.5 border border-racing-amber/60 animate-fade-in">
-            <div className="text-[9px] font-display font-bold tracking-widest text-racing-amber">
-              JANELA SPOTLIGHT · 15s
-            </div>
-            <div className="text-[10px] font-display font-bold truncate text-foreground">
-              {pilot?.name} · {leadBid.sponsor}
+              <CarRenderer pilot={pilot} view="top" speed={0.95} boosting={false} braking={false} />
             </div>
           </div>
         )}
       </div>
 
-      {/* ── Recent bids list ──────────────────────────────────────────────── */}
-      <div className="relative z-10 mx-2 mb-2 surface-2 hud-border rounded p-2">
-        <div className="text-[9px] tracking-widest font-display font-bold text-muted-foreground mb-1">
-          ÚLTIMOS LANCES
+      {/* ── Fila de próximos vencedores ──────────────────────────────────── */}
+      {queue.length > 0 && (
+        <div className="relative z-10 mx-2 mb-2 surface-2 hud-border rounded p-2">
+          <div className="text-[9px] tracking-widest font-display font-bold text-muted-foreground mb-1">
+            FILA · PRÓXIMOS NO AR
+          </div>
+          <div className="space-y-1 max-h-[80px] overflow-hidden">
+            {queue.map((w, i) => (
+              <div
+                key={`${w.brand}-${w.amount}`}
+                className="flex items-center justify-between text-[10px] surface-elev rounded px-1.5 py-1"
+              >
+                <div className="flex items-center gap-1 min-w-0 flex-1">
+                  <span className={`font-mono tabular-nums text-${w.color} font-bold w-3`}>
+                    {i + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-display font-bold text-foreground truncate text-[10px] leading-tight">
+                      {w.brand}
+                    </div>
+                    <div className="text-muted-foreground truncate text-[9px] leading-tight">
+                      {w.scuderia}
+                    </div>
+                  </div>
+                </div>
+                <span className="font-mono tabular-nums text-racing-amber font-bold text-[10px] ml-1">
+                  ${(w.amount / 1000).toFixed(1)}k
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="space-y-0.5 max-h-[88px] overflow-hidden">
+      )}
+
+      {/* ── Lances ao vivo ───────────────────────────────────────────────── */}
+      <div className="relative z-10 mx-2 mb-2 surface-2 hud-border rounded p-2">
+        <div className="flex items-center justify-between text-[9px] tracking-widest font-display font-bold mb-1">
+          <span className="text-muted-foreground">LANCES AO VIVO</span>
+          <span className="text-racing-amber tabular-nums">
+            ${leadBid?.amount.toLocaleString() ?? "0"}
+          </span>
+        </div>
+        <div className="space-y-0.5 max-h-[80px] overflow-hidden">
           {bids.slice(0, 4).map((b, i) => (
             <div
               key={b.at}
               className={`flex items-center justify-between text-[10px] font-mono tabular-nums ${i === 0 ? "text-racing-amber font-bold" : "text-muted-foreground"}`}
+              style={i === 0 ? { animation: "auction-bid 0.5s ease-out" } : undefined}
             >
-              <span className="truncate font-display font-bold text-[10px] max-w-[110px]">{b.sponsor}</span>
+              <span className="truncate font-display font-bold text-[10px] max-w-[120px]">
+                {b.brand}
+              </span>
               <span>${b.amount.toLocaleString()}</span>
             </div>
           ))}
         </div>
         <button className="mt-2 w-full text-[10px] font-display font-bold tracking-widest py-1.5 rounded bg-racing-amber text-background hover:opacity-90 transition-opacity">
-          DAR LANCE
+          ALUGAR SCUDERIA · DAR LANCE
         </button>
       </div>
-
-      {/* Next boost queued */}
-      {next && (
-        <div className="relative z-10 mx-2 mb-2 px-2 py-1.5 rounded surface-2 hud-border">
-          <div className="text-[9px] text-muted-foreground tracking-widest font-display">PRÓXIMO BOOST</div>
-          <div className="text-[10px] font-display font-bold truncate">{next.sponsor}</div>
-          <div className="font-mono text-xs text-racing-red tabular-nums">{fmt(next.remaining)}</div>
-        </div>
-      )}
     </aside>
   );
 };
