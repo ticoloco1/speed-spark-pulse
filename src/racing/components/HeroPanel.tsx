@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useRaceStore } from "@/racing/engine";
 import { CarRenderer } from "./CarRenderer";
-import { Edit3, Fuel, Rocket, Zap, FlaskConical, Car, Mic } from "lucide-react";
+import { Edit3, Fuel, Rocket, Zap, FlaskConical, Car, Mic, Gauge } from "lucide-react";
 import { CommentaryPanel } from "./CommentaryPanel";
 import { PilotAdminControls } from "./PilotAdminControls";
+import { CockpitView } from "./CockpitView";
 import { useAuth } from "@/hooks/useAuth";
 import { db, dbPilotToEngine, type DbPilot } from "@/racing/db";
 
-type Tab = "car" | "anchor";
+type Tab = "car" | "anchor" | "cockpit";
 
 export const HeroPanel = () => {
   const enginePilot = useRaceStore((s) => s.pilots[0]);
@@ -35,6 +36,11 @@ export const HeroPanel = () => {
         <TabButton active={tab === "anchor"} onClick={() => setTab("anchor")} icon={<Mic className="w-3.5 h-3.5" />}>
           LOCUTOR AO VIVO
         </TabButton>
+        {isOwner && (
+          <TabButton active={tab === "cockpit"} onClick={() => setTab("cockpit")} icon={<Gauge className="w-3.5 h-3.5" />}>
+            COCKPIT POV
+          </TabButton>
+        )}
         {isOwner ? (
           <div className="ml-auto px-3 py-1.5 flex items-center gap-1.5 text-[9px] font-display font-bold tracking-widest text-racing-amber">
             <span className="w-1.5 h-1.5 rounded-full bg-racing-amber animate-pulse" />
@@ -46,6 +52,10 @@ export const HeroPanel = () => {
       {tab === "anchor" ? (
         <div className="h-[420px]">
           <CommentaryPanel />
+        </div>
+      ) : tab === "cockpit" ? (
+        <div className="h-[420px]">
+          <CockpitView pilot={heroPilot} />
         </div>
       ) : (
         <>
