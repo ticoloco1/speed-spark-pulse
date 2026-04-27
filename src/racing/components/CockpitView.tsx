@@ -36,7 +36,7 @@ export const CockpitView = ({ pilot }: Props) => {
   }, []);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-sky-900/40 via-background to-black">
+    <div className="relative w-full h-full overflow-hidden bg-gradient-to-b from-racing-blue/30 via-background to-black">
       {/* Céu / horizonte */}
       <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-racing-blue/20 via-racing-purple/15 to-transparent" />
       <div className="absolute inset-x-0 top-1/2 h-px bg-foreground/30" />
@@ -51,7 +51,7 @@ export const CockpitView = ({ pilot }: Props) => {
           style={{ transform: `rotateX(58deg) rotateZ(${steer * -0.4}deg)` }}
         >
           {/* Asfalto */}
-          <div className="absolute inset-0 bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-700" />
+          <div className="absolute inset-0 bg-gradient-to-b bg-[hsl(0_0%_8%)]" />
 
           {/* Linhas tracejadas centrais correndo em direção ao piloto */}
           <div
@@ -153,25 +153,25 @@ export const CockpitView = ({ pilot }: Props) => {
           style={{ transform: `rotate(${steer}deg)` }}
         >
           {/* Aro externo */}
-          <div className="absolute inset-0 rounded-full border-[14px] border-zinc-900 shadow-2xl"
+          <div className="absolute inset-0 rounded-full border-[14px] border-[hsl(0_0%_6%)] shadow-2xl"
                style={{ boxShadow: "0 0 60px hsl(0 0% 0% / 0.8), inset 0 0 30px hsl(0 0% 0% / 0.6)" }} />
           {/* Aro interno (textura) */}
-          <div className="absolute inset-3 rounded-full border-2 border-zinc-700" />
-          <div className="absolute inset-6 rounded-full border border-zinc-800" />
+          <div className="absolute inset-3 rounded-full border-2 border-[hsl(0_0%_18%)]" />
+          <div className="absolute inset-6 rounded-full border border-[hsl(0_0%_12%)]" />
 
           {/* Spokes (3 raios estilo F1) */}
-          <div className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 rounded" />
+          <div className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-[hsl(0_0%_6%)] rounded" />
           <div
-            className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 rounded"
+            className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-[hsl(0_0%_6%)] rounded"
             style={{ transform: "translate(-50%, -50%) rotate(120deg)" }}
           />
           <div
-            className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-zinc-900 rounded"
+            className="absolute left-1/2 top-1/2 w-[260px] h-6 -translate-x-1/2 -translate-y-1/2 bg-[hsl(0_0%_6%)] rounded"
             style={{ transform: "translate(-50%, -50%) rotate(-120deg)" }}
           />
 
           {/* Hub central com cor do time */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-zinc-800 to-black border-2 border-racing-red flex flex-col items-center justify-center">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(0_0%_10%)] to-[hsl(0_0%_2%)] border-2 border-racing-red flex flex-col items-center justify-center">
             <div className="text-[8px] font-display tracking-widest text-racing-red">#{pilot.number}</div>
             <div className="text-[9px] font-display font-bold text-foreground truncate max-w-[80px] text-center leading-tight">
               {pilot.team.split(" ")[0].toUpperCase()}
@@ -188,7 +188,7 @@ export const CockpitView = ({ pilot }: Props) => {
               return (
                 <div
                   key={i}
-                  className={`w-2 h-2 rounded-full ${lit ? color : "bg-zinc-800"} ${lit ? "shadow-[0_0_6px_currentColor]" : ""}`}
+                  className={`w-2 h-2 rounded-full ${lit ? color : "bg-[hsl(0_0%_12%)]"} ${lit ? "shadow-[0_0_6px_currentColor]" : ""}`}
                 />
               );
             })}
