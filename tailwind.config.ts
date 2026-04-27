@@ -158,6 +158,8 @@ export default {
         "flash-event": "flash-event 1.2s ease-out",
         "track-scroll-vertical": "track-scroll-vertical 80s linear infinite",
         "track-scroll-vertical-rev": "track-scroll-vertical-rev 4s linear infinite",
+        "car-run-up": "car-run-up 8s linear infinite",
+        "car-run-up-lane": "car-run-up-lane 12s linear infinite",
       },
     },
   },
