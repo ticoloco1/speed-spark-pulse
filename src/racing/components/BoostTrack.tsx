@@ -183,19 +183,23 @@ export const BoostTrack = () => {
         <div className="absolute left-3 top-0 bottom-0 w-px bg-white/10" />
         <div className="absolute right-3 top-0 bottom-0 w-px bg-white/10" />
 
-        {/* Car going up (top view to fit vertical lane) */}
+        {/* Car flowing up the lane — bottom → top in ~8s, then re-enters from bottom */}
         {pilot && (
           <div
-            className="absolute left-1/2 -translate-x-1/2 transition-[bottom] duration-100 ease-linear car-chassis-vibrate"
-            style={{ bottom: `${carPos}%`, width: "60%", maxWidth: "120px" }}
+            className="absolute left-0 right-0 bottom-0 flex justify-center pointer-events-none animate-car-run-up-lane car-chassis-vibrate"
+            style={{
+              animationDuration: spotlight ? "5s" : isSafetyCar ? "14s" : "8s",
+            }}
           >
-            <CarRenderer
-              pilot={pilot}
-              view="top"
-              speed={carSpeed}
-              boosting={spotlight}
-              braking={isSafetyCar}
-            />
+            <div style={{ width: "60%", maxWidth: "120px" }}>
+              <CarRenderer
+                pilot={pilot}
+                view="top"
+                speed={carSpeed}
+                boosting={spotlight}
+                braking={isSafetyCar}
+              />
+            </div>
           </div>
         )}
 
