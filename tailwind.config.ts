@@ -131,6 +131,18 @@ export default {
           from: { transform: "translateY(-66.6667%)" },
           to: { transform: "translateY(0)" },
         },
+        "car-run-up": {
+          "0%": { transform: "translate(-50%, 110%)", opacity: "0" },
+          "8%": { opacity: "1" },
+          "92%": { opacity: "1" },
+          "100%": { transform: "translate(-50%, -110%)", opacity: "0" },
+        },
+        "car-run-up-lane": {
+          "0%": { transform: "translateY(110%)", opacity: "0" },
+          "8%": { opacity: "1" },
+          "92%": { opacity: "1" },
+          "100%": { transform: "translateY(-110%)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
