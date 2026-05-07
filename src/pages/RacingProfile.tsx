@@ -6,6 +6,8 @@ import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { BottomTicker } from "@/racing/components/BottomTicker";
 import { TopTicker } from "@/racing/components/TopTicker";
 import { RacingHeader } from "@/racing/components/RacingHeader";
+import { PorscheGT3Banner } from "@/racing/components/PorscheGT3Banner";
+import { RaceVideosPanel } from "@/racing/components/RaceVideosPanel";
 import {
   BadgeCheck, Share2, MessageCircle, UserPlus, Heart, Repeat2,
   Rocket, Flag, Trophy, Link as LinkIcon, Instagram, Twitter, Globe,
