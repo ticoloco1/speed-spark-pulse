@@ -297,6 +297,11 @@
   to   { background-position: -120px 0; }
 }
 
+@keyframes track-scroll-x {
+  from { background-position: 0 0; }
+  to   { background-position: -100% 0; }
+}
+
 @layer utilities {
   .car-chassis-vibrate { animation: chassis-shake 0.18s ease-in-out infinite; }
   .car-chassis-vibrate-soft { animation: chassis-shake 0.32s ease-in-out infinite; }
