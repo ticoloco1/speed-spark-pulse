@@ -12,6 +12,7 @@ import RenderTest from "./pages/RenderTest.tsx";
 import Auth from "./pages/Auth.tsx";
 import AuthCallback from "./pages/AuthCallback.tsx";
 import PilotSetup from "./pages/PilotSetup.tsx";
+import RacingProfile from "./pages/RacingProfile.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/racing" element={<Racing />} />
             <Route path="/racing/render-test" element={<RenderTest />} />
+            <Route path="/racing/profile/:slug" element={<RacingProfile />} />
+            <Route path="/racing/profile" element={<RacingProfile />} />
             <Route path="/racing/:slug" element={<PilotPage />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
