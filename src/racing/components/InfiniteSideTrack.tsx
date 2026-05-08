@@ -136,19 +136,19 @@ export const InfiniteSideTrack = ({ side = "left" }: InfiniteSideTrackProps) => 
               }}
               title={`#${p.number} ${p.name} · ${p.sponsor}`}
             >
-              {/* Sponsor logo — HIGHLIGHTED + larger so brand reads from afar */}
-              <div className="text-[9px] font-display font-black tracking-wider text-background bg-racing-amber rounded-sm px-1.5 py-0.5 truncate uppercase max-w-full shadow-md ring-1 ring-foreground/20">
-                {p.sponsor.slice(0, 10)}
-              </div>
-
-              {/* Car number */}
-              <div className="text-[11px] font-display font-bold text-racing-red leading-none">
+              {/* Car number ON TOP — separated, always readable */}
+              <div className="text-[12px] font-display font-black text-foreground bg-background/90 rounded px-1.5 leading-tight">
                 #{p.number}
               </div>
 
-              {/* Side-view car */}
+              {/* Side-view car (no decals on the car body) */}
               <div className="w-full h-9 flex items-center justify-center car-chassis-vibrate-soft">
-                <CarRenderer pilot={ep} view="side" className="w-full h-full" />
+                <CarRenderer pilot={ep} view="side" showSponsors={false} className="w-full h-full" />
+              </div>
+
+              {/* Sponsor logo BELOW the car — highlighted, never on top */}
+              <div className="text-[9px] font-display font-black tracking-wider text-background bg-racing-amber rounded-sm px-1.5 py-0.5 truncate uppercase max-w-full shadow-md ring-1 ring-foreground/20">
+                {p.sponsor.slice(0, 10)}
               </div>
 
               {/* Pilot first name */}

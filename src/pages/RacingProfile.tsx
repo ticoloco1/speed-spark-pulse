@@ -6,6 +6,8 @@ import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { BottomTicker } from "@/racing/components/BottomTicker";
 import { TopTicker } from "@/racing/components/TopTicker";
 import { RacingHeader } from "@/racing/components/RacingHeader";
+import { PorscheGT3Banner } from "@/racing/components/PorscheGT3Banner";
+import { RaceVideosPanel } from "@/racing/components/RaceVideosPanel";
 import {
   BadgeCheck, Share2, MessageCircle, UserPlus, Heart, Repeat2,
   Rocket, Flag, Trophy, Link as LinkIcon, Instagram, Twitter, Globe,
@@ -80,20 +82,19 @@ export default function RacingProfile() {
               SPONSOR · A PARTIR DE $99
             </button>
           </div>
+
+          {/* Race videos 16:9 with sponsor auction overlay */}
+          <RaceVideosPanel />
         </aside>
 
         {/* CENTER: Profile + tabs */}
         <section className="col-span-12 lg:col-span-6 space-y-3">
           {/* Hero — Carro + foto piloto à esquerda, pista atrás */}
+          <PorscheGT3Banner pilotName={pilot.name} number={pilot.number} defaultSponsorDoor={pilot.sponsor} />
           <div className="surface-1 hud-border rounded-lg overflow-hidden">
-            <div className="relative h-44 grid-rays bg-gradient-to-br from-racing-red/30 via-background to-background">
-              <div className="absolute inset-x-0 bottom-0 h-12 asphalt-stream opacity-60" />
-              <div className="absolute right-3 bottom-2 w-[55%] max-w-[420px] car-chassis-vibrate-soft">
-                <CarRenderer pilot={pilot} view="hero" speed={0.9} boosting className="w-full h-auto" />
-              </div>
-            </div>
+            <div className="relative h-2 bg-gradient-to-r from-racing-red via-racing-amber to-racing-purple" />
 
-            <div className="px-4 pb-4 -mt-12 relative">
+            <div className="px-4 pb-4 pt-4 relative">
               <div className="flex items-end gap-4">
                 {/* Avatar / foto piloto à esquerda */}
                 <div className="w-24 h-24 rounded-2xl hud-border surface-2 overflow-hidden shrink-0 ring-4 ring-background">
