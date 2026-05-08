@@ -82,6 +82,9 @@ export default function RacingProfile() {
               SPONSOR · A PARTIR DE $99
             </button>
           </div>
+
+          {/* Race videos 16:9 with sponsor auction overlay */}
+          <RaceVideosPanel />
         </aside>
 
         {/* CENTER: Profile + tabs */}
