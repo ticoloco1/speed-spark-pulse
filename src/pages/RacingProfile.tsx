@@ -90,13 +90,9 @@ export default function RacingProfile() {
         {/* CENTER: Profile + tabs */}
         <section className="col-span-12 lg:col-span-6 space-y-3">
           {/* Hero — Carro + foto piloto à esquerda, pista atrás */}
+          <PorscheGT3Banner pilotName={pilot.name} number={pilot.number} defaultSponsorDoor={pilot.sponsor} />
           <div className="surface-1 hud-border rounded-lg overflow-hidden">
-            <div className="relative h-44 grid-rays bg-gradient-to-br from-racing-red/30 via-background to-background">
-              <div className="absolute inset-x-0 bottom-0 h-12 asphalt-stream opacity-60" />
-              <div className="absolute right-3 bottom-2 w-[55%] max-w-[420px] car-chassis-vibrate-soft">
-                <CarRenderer pilot={pilot} view="hero" speed={0.9} boosting className="w-full h-auto" />
-              </div>
-            </div>
+            <div className="relative h-2 bg-gradient-to-r from-racing-red via-racing-amber to-racing-purple" />
 
             <div className="px-4 pb-4 -mt-12 relative">
               <div className="flex items-end gap-4">
