@@ -322,7 +322,7 @@ export const PorscheGT3Banner = ({
 
         {/* Scrolling sponsor row */}
         <div className="overflow-hidden mb-3">
-          <div className="flex gap-2 animate-[ticker-scroll_30s_linear_infinite] whitespace-nowrap">
+          <div className="flex gap-2 animate-[ticker-scroll-left_30s_linear_infinite] whitespace-nowrap">
             {[...sponsors, ...sponsors].map((s, i) => (
               <div
                 key={i}
