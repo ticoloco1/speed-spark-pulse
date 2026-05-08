@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import gtRacer from "@/assets/cars/gt-racer-side.png";
-import { Upload, Clock, Calendar, CalendarDays } from "lucide-react";
+import porscheGT3 from "@/assets/cars/porsche-gt3-side.png";
+import { Upload, Clock, Calendar, CalendarDays, Move, Save, RotateCcw } from "lucide-react";
 
 const COLORS = [
   { name: "Branco", hex: "#f4f4f5" },
@@ -26,37 +26,70 @@ interface SponsorEntry {
 const RATE_PRICE: Record<SponsorRate, number> = { hour: 49, day: 499, month: 4999 };
 const RATE_LABEL: Record<SponsorRate, string> = { hour: "/h", day: "/dia", month: "/mês" };
 
+interface LogoConfig {
+  xPct: number; // % of car width
+  yPct: number; // % of car height
+  widthPct: number; // % of car width
+  opacity: number; // 0..1
+}
+
+const DEFAULT_LOGO: LogoConfig = { xPct: 44, yPct: 46, widthPct: 16, opacity: 1 };
+
 interface Props {
   pilotName: string;
   number: number | string;
   defaultSponsorDoor?: string;
   defaultSponsorHood?: string;
   defaultSponsorFront?: string;
+  storageKey?: string;
 }
 
-/**
- * Editable GT race-car banner used inside the profile.
- * - Original GT prototype car (fictional, no real brand)
- * - Full-color tint via mix-blend-mode (works white→any color)
- * - User can upload their own brand image to put on the car door
- * - Sponsor list with paid time-slots (hour / day / month)
- */
 export const PorscheGT3Banner = ({
   pilotName,
   number,
   defaultSponsorDoor = "RED BULL",
   defaultSponsorHood = "MOBIL 1",
   defaultSponsorFront = "MICHELIN",
+  storageKey = "racing-profile-banner",
 }: Props) => {
   const [color, setColor] = useState(COLORS[0]);
   const [doorSponsor, setDoorSponsor] = useState(defaultSponsorDoor);
   const [hoodSponsor, setHoodSponsor] = useState(defaultSponsorHood);
   const [frontSponsor, setFrontSponsor] = useState(defaultSponsorFront);
-  const [editing, setEditing] = useState(false);
+  const [editingSponsors, setEditingSponsors] = useState(false);
   const [userLogo, setUserLogo] = useState<string | null>(null);
+  const [logoCfg, setLogoCfg] = useState<LogoConfig>(DEFAULT_LOGO);
+  const [logoEditMode, setLogoEditMode] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const carBoxRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
 
-  // Sponsor queue — simulates auctioned brand slots that scroll
+  // Load saved
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.color) setColor(s.color);
+      if (s.doorSponsor) setDoorSponsor(s.doorSponsor);
+      if (s.hoodSponsor) setHoodSponsor(s.hoodSponsor);
+      if (s.frontSponsor) setFrontSponsor(s.frontSponsor);
+      if (s.userLogo) setUserLogo(s.userLogo);
+      if (s.logoCfg) setLogoCfg({ ...DEFAULT_LOGO, ...s.logoCfg });
+    } catch {}
+  }, [storageKey]);
+
+  const save = () => {
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({ color, doorSponsor, hoodSponsor, frontSponsor, userLogo, logoCfg })
+    );
+    setLogoEditMode(false);
+  };
+
+  const resetLogo = () => setLogoCfg(DEFAULT_LOGO);
+
+  // Sponsor queue
   const [sponsors, setSponsors] = useState<SponsorEntry[]>([
     { brand: "TRUSTBANK", rate: "month", paid: 4999, ts: Date.now() - 5_000 },
     { brand: "VOLT ENERGY", rate: "day", paid: 499, ts: Date.now() - 12_000 },
@@ -66,7 +99,6 @@ export const PorscheGT3Banner = ({
   const [bidBrand, setBidBrand] = useState("");
   const [bidRate, setBidRate] = useState<SponsorRate>("hour");
 
-  // Add a fake bid every 14s to feel "live"
   useEffect(() => {
     const FAKE = ["AERO LAB", "TURBO MAX", "PIT ZERO", "GRID ONE", "RACE FUEL", "OCTANE 99"];
     const id = setInterval(() => {
@@ -90,17 +122,47 @@ export const PorscheGT3Banner = ({
     const f = e.target.files?.[0];
     if (!f) return;
     const r = new FileReader();
-    r.onload = () => setUserLogo(String(r.result));
+    r.onload = () => {
+      setUserLogo(String(r.result));
+      setLogoEditMode(true);
+    };
     r.readAsDataURL(f);
+  };
+
+  // Drag logic
+  const onLogoPointerDown = (e: React.PointerEvent) => {
+    if (!logoEditMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: logoCfg.xPct,
+      origY: logoCfg.yPct,
+    };
+  };
+  const onLogoPointerMove = (e: React.PointerEvent) => {
+    if (!dragRef.current || !carBoxRef.current) return;
+    const rect = carBoxRef.current.getBoundingClientRect();
+    const dx = ((e.clientX - dragRef.current.startX) / rect.width) * 100;
+    const dy = ((e.clientY - dragRef.current.startY) / rect.height) * 100;
+    setLogoCfg((c) => ({
+      ...c,
+      xPct: Math.max(0, Math.min(95, dragRef.current!.origX + dx)),
+      yPct: Math.max(0, Math.min(95, dragRef.current!.origY + dy)),
+    }));
+  };
+  const onLogoPointerUp = () => {
+    dragRef.current = null;
   };
 
   return (
     <div className="space-y-2">
       <div className="relative h-72 md:h-80 overflow-hidden hud-border rounded-lg surface-1">
-        {/* Sky gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-racing-purple/30 via-background to-background" />
 
-        {/* Animated guard-rails / track behind the car */}
+        {/* Track FX */}
         <div
           className="absolute inset-x-0 bottom-12 h-3 opacity-90"
           style={{
@@ -135,36 +197,33 @@ export const PorscheGT3Banner = ({
             <div
               key={i}
               className="absolute h-px bg-gradient-to-r from-transparent via-foreground/60 to-transparent"
-              style={{
-                top: `${t}%`,
-                left: 0,
-                right: 0,
-                animation: `speed-line-pass ${0.5 + i * 0.1}s linear infinite`,
-              }}
+              style={{ top: `${t}%`, left: 0, right: 0, animation: `speed-line-pass ${0.5 + i * 0.1}s linear infinite` }}
             />
           ))}
         </div>
 
-        {/* THE CAR — centered horizontally and vertically so door, rear and front are visible */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[88%] max-w-[920px] car-chassis-vibrate-soft">
+        {/* CAR — centered, full visible */}
+        <div
+          ref={carBoxRef}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[82%] max-w-[860px] car-chassis-vibrate-soft"
+        >
           <div className="relative">
-            {/* Base car */}
             <img
-              src={gtRacer}
-              alt={`GT racer #${number} ${pilotName}`}
+              src={porscheGT3}
+              alt={`GT3 #${number} ${pilotName}`}
               className="w-full h-auto select-none pointer-events-none block"
               style={{ filter: "drop-shadow(0 18px 24px rgba(0,0,0,.55))" }}
               draggable={false}
             />
-            {/* Color tint layer — multiply blend lets white paint take ANY hue */}
+            {/* Color tint */}
             <div
               aria-hidden
               className="absolute inset-0 pointer-events-none"
               style={{
                 background: color.hex,
                 mixBlendMode: "multiply",
-                WebkitMaskImage: `url(${gtRacer})`,
-                maskImage: `url(${gtRacer})`,
+                WebkitMaskImage: `url(${porscheGT3})`,
+                maskImage: `url(${porscheGT3})`,
                 WebkitMaskSize: "100% 100%",
                 maskSize: "100% 100%",
                 WebkitMaskRepeat: "no-repeat",
@@ -173,66 +232,65 @@ export const PorscheGT3Banner = ({
               }}
             />
 
-            {/* HOOD SPONSOR (front area, above splitter) */}
+            {/* HOOD */}
             <div
               className="absolute font-display font-black tracking-[0.18em] text-background bg-foreground/95 px-2 py-0.5 rounded-sm shadow"
-              style={{
-                left: "12%",
-                top: "52%",
-                fontSize: "clamp(9px, 1.1vw, 13px)",
-                transform: "skewX(-8deg)",
-              }}
+              style={{ left: "14%", top: "54%", fontSize: "clamp(9px,1.1vw,13px)", transform: "skewX(-8deg)" }}
             >
               {hoodSponsor}
             </div>
 
-            {/* DOOR SPONSOR (mid car, big readable) — supports image OR text */}
-            <div
-              className="absolute"
-              style={{ left: "42%", top: "44%" }}
-            >
-              {userLogo ? (
+            {/* DOOR LOGO / TEXT — positioned via logoCfg when image present */}
+            {userLogo ? (
+              <div
+                onPointerDown={onLogoPointerDown}
+                onPointerMove={onLogoPointerMove}
+                onPointerUp={onLogoPointerUp}
+                className={`absolute ${logoEditMode ? "cursor-move ring-2 ring-racing-amber" : ""}`}
+                style={{
+                  left: `${logoCfg.xPct}%`,
+                  top: `${logoCfg.yPct}%`,
+                  width: `${logoCfg.widthPct}%`,
+                  opacity: logoCfg.opacity,
+                  touchAction: "none",
+                }}
+              >
                 <img
                   src={userLogo}
                   alt="Sua marca"
-                  className="object-contain"
-                  style={{
-                    height: "clamp(34px, 5vw, 56px)",
-                    maxWidth: "180px",
-                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,.6))",
-                  }}
+                  className="w-full h-auto block pointer-events-none"
+                  style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,.6))" }}
+                  draggable={false}
                 />
-              ) : (
+              </div>
+            ) : (
+              <div className="absolute" style={{ left: "44%", top: "46%" }}>
                 <div
                   className="font-display font-black tracking-[0.2em] text-background bg-racing-amber px-3 py-1 rounded-sm shadow-lg ring-1 ring-foreground/20"
-                  style={{ fontSize: "clamp(11px, 1.6vw, 18px)" }}
+                  style={{ fontSize: "clamp(11px,1.6vw,18px)" }}
                 >
                   {doorSponsor}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* REAR / WING SPONSOR */}
+            {/* REAR */}
             <div
               className="absolute font-display font-bold tracking-widest text-foreground bg-background/85 border border-border px-1.5 py-0.5 rounded-sm"
-              style={{
-                right: "6%",
-                top: "30%",
-                fontSize: "clamp(8px, 0.9vw, 11px)",
-              }}
+              style={{ right: "8%", top: "32%", fontSize: "clamp(8px,0.9vw,11px)" }}
             >
               {sponsors[0]?.brand ?? frontSponsor}
             </div>
 
-            {/* Number on the door */}
+            {/* Number */}
             <div
               className="absolute font-display font-black text-foreground bg-background/95 rounded-full flex items-center justify-center ring-2 ring-racing-red"
               style={{
-                left: "32%",
-                top: "44%",
-                width: "clamp(28px, 3.6vw, 44px)",
-                height: "clamp(28px, 3.6vw, 44px)",
-                fontSize: "clamp(13px, 1.8vw, 22px)",
+                left: "33%",
+                top: "46%",
+                width: "clamp(28px,3.6vw,44px)",
+                height: "clamp(28px,3.6vw,44px)",
+                fontSize: "clamp(13px,1.8vw,22px)",
               }}
             >
               {number}
@@ -240,13 +298,13 @@ export const PorscheGT3Banner = ({
           </div>
         </div>
 
-        {/* Top-right: pilot plate */}
+        {/* Pilot plate */}
         <div className="absolute top-3 right-3 surface-2 hud-border rounded px-2 py-1">
-          <div className="text-[9px] text-muted-foreground tracking-widest font-display">GT-R PROTO</div>
+          <div className="text-[9px] text-muted-foreground tracking-widest font-display">GT3 RACE</div>
           <div className="text-[12px] font-display font-bold">{pilotName} · #{number}</div>
         </div>
 
-        {/* Bottom-left: color picker */}
+        {/* Color picker */}
         <div className="absolute bottom-2 left-3 z-10 flex items-center gap-2">
           <span className="text-[9px] text-muted-foreground tracking-widest font-display bg-background/70 px-1.5 py-0.5 rounded">
             COR
@@ -267,8 +325,8 @@ export const PorscheGT3Banner = ({
           </div>
         </div>
 
-        {/* Bottom-right: actions */}
-        <div className="absolute bottom-2 right-3 z-10 flex items-center gap-2">
+        {/* Actions */}
+        <div className="absolute bottom-2 right-3 z-10 flex items-center gap-2 flex-wrap justify-end">
           <button
             onClick={() => fileRef.current?.click()}
             className="flex items-center gap-1 text-[9px] font-display font-bold tracking-widest surface-2 hud-border px-2 py-1 rounded hover:bg-secondary"
@@ -278,35 +336,101 @@ export const PorscheGT3Banner = ({
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleLogo} />
           {userLogo && (
-            <button
-              onClick={() => setUserLogo(null)}
-              className="text-[9px] font-display font-bold tracking-widest surface-2 hud-border px-2 py-1 rounded hover:bg-secondary"
-            >
-              REMOVER
-            </button>
+            <>
+              <button
+                onClick={() => setLogoEditMode((v) => !v)}
+                className={`flex items-center gap-1 text-[9px] font-display font-bold tracking-widest px-2 py-1 rounded hover:opacity-90 ${
+                  logoEditMode ? "bg-racing-amber text-background" : "surface-2 hud-border"
+                }`}
+              >
+                <Move className="w-3 h-3" />
+                {logoEditMode ? "EDITANDO" : "AJUSTAR LOGO"}
+              </button>
+              <button
+                onClick={() => setUserLogo(null)}
+                className="text-[9px] font-display font-bold tracking-widest surface-2 hud-border px-2 py-1 rounded hover:bg-secondary"
+              >
+                REMOVER
+              </button>
+            </>
           )}
           <button
-            onClick={() => setEditing((v) => !v)}
+            onClick={() => setEditingSponsors((v) => !v)}
             className="text-[9px] font-display font-bold tracking-widest bg-racing-red text-primary-foreground px-2 py-1 rounded hover:opacity-90"
           >
-            {editing ? "OK" : "EDITAR SPONSORS"}
+            {editingSponsors ? "OK" : "EDITAR SPONSORS"}
+          </button>
+          <button
+            onClick={save}
+            className="flex items-center gap-1 text-[9px] font-display font-bold tracking-widest bg-racing-amber text-background px-2 py-1 rounded hover:opacity-90"
+          >
+            <Save className="w-3 h-3" /> SALVAR
           </button>
         </div>
 
-        {/* Editor panel */}
-        {editing && (
+        {/* Logo editor panel */}
+        {logoEditMode && userLogo && (
+          <div className="absolute top-12 right-3 z-20 surface-1 hud-border rounded-md p-3 w-64 space-y-3 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-display font-bold tracking-widest">AJUSTAR LOGO</span>
+              <button onClick={resetLogo} title="Resetar" className="text-muted-foreground hover:text-foreground">
+                <RotateCcw className="w-3 h-3" />
+              </button>
+            </div>
+            <p className="text-[9px] text-muted-foreground">Arraste o logo na porta do carro para reposicionar.</p>
+            <RangeRow
+              label={`TAMANHO ${logoCfg.widthPct.toFixed(0)}%`}
+              min={4}
+              max={50}
+              step={1}
+              value={logoCfg.widthPct}
+              onChange={(v) => setLogoCfg((c) => ({ ...c, widthPct: v }))}
+            />
+            <RangeRow
+              label={`OPACIDADE ${(logoCfg.opacity * 100).toFixed(0)}%`}
+              min={0.1}
+              max={1}
+              step={0.05}
+              value={logoCfg.opacity}
+              onChange={(v) => setLogoCfg((c) => ({ ...c, opacity: v }))}
+            />
+            <RangeRow
+              label={`X ${logoCfg.xPct.toFixed(0)}%`}
+              min={0}
+              max={95}
+              step={0.5}
+              value={logoCfg.xPct}
+              onChange={(v) => setLogoCfg((c) => ({ ...c, xPct: v }))}
+            />
+            <RangeRow
+              label={`Y ${logoCfg.yPct.toFixed(0)}%`}
+              min={0}
+              max={95}
+              step={0.5}
+              value={logoCfg.yPct}
+              onChange={(v) => setLogoCfg((c) => ({ ...c, yPct: v }))}
+            />
+            <button
+              onClick={save}
+              className="w-full flex items-center justify-center gap-1 text-[10px] font-display font-bold tracking-widest bg-racing-amber text-background px-2 py-1.5 rounded hover:opacity-90"
+            >
+              <Save className="w-3 h-3" /> SALVAR POSIÇÃO
+            </button>
+          </div>
+        )}
+
+        {/* Sponsor editor */}
+        {editingSponsors && (
           <div className="absolute bottom-10 right-3 z-20 surface-1 hud-border rounded-md p-3 w-64 space-y-2 shadow-xl">
             <SponsorInput label="Capô" value={hoodSponsor} onChange={setHoodSponsor} />
-            <SponsorInput label="Porta (destaque)" value={doorSponsor} onChange={setDoorSponsor} />
+            <SponsorInput label="Porta (texto)" value={doorSponsor} onChange={setDoorSponsor} />
             <SponsorInput label="Asa traseira" value={frontSponsor} onChange={setFrontSponsor} />
-            <p className="text-[9px] text-muted-foreground">
-              Use até 14 caracteres por slot. Marca enviada substitui o slot da porta.
-            </p>
+            <p className="text-[9px] text-muted-foreground">Até 14 caracteres. Se enviar uma logo, ela substitui o texto da porta.</p>
           </div>
         )}
       </div>
 
-      {/* SPONSORS PAID LIST + bidding */}
+      {/* SPONSORS PAID */}
       <div className="surface-1 hud-border rounded-md p-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -320,14 +444,10 @@ export const PorscheGT3Banner = ({
           </div>
         </div>
 
-        {/* Scrolling sponsor row */}
         <div className="overflow-hidden mb-3">
           <div className="flex gap-2 animate-[ticker-scroll-left_30s_linear_infinite] whitespace-nowrap">
             {[...sponsors, ...sponsors].map((s, i) => (
-              <div
-                key={i}
-                className="surface-2 hud-border rounded px-2 py-1 flex items-center gap-2 shrink-0"
-              >
+              <div key={i} className="surface-2 hud-border rounded px-2 py-1 flex items-center gap-2 shrink-0">
                 <span className="font-display font-bold text-[11px]">{s.brand}</span>
                 <span className="text-[9px] text-racing-amber font-display tracking-widest">
                   ${s.paid}{RATE_LABEL[s.rate]}
@@ -337,7 +457,6 @@ export const PorscheGT3Banner = ({
           </div>
         </div>
 
-        {/* Bid form */}
         <div className="flex items-center gap-2">
           <input
             value={bidBrand}
@@ -367,13 +486,28 @@ export const PorscheGT3Banner = ({
   );
 };
 
+const RangeRow = ({
+  label, min, max, step, value, onChange,
+}: { label: string; min: number; max: number; step: number; value: number; onChange: (v: number) => void }) => (
+  <label className="block">
+    <span className="block text-[9px] tracking-widest font-display text-muted-foreground mb-1">{label}</span>
+    <input
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => onChange(parseFloat(e.target.value))}
+      className="w-full accent-racing-amber"
+    />
+  </label>
+);
+
 const SponsorInput = ({
   label, value, onChange,
 }: { label: string; value: string; onChange: (v: string) => void }) => (
   <label className="block">
-    <span className="block text-[9px] tracking-widest font-display text-muted-foreground mb-1">
-      {label.toUpperCase()}
-    </span>
+    <span className="block text-[9px] tracking-widest font-display text-muted-foreground mb-1">{label.toUpperCase()}</span>
     <input
       value={value}
       maxLength={14}
