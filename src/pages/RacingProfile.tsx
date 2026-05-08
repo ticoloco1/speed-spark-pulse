@@ -94,7 +94,7 @@ export default function RacingProfile() {
           <div className="surface-1 hud-border rounded-lg overflow-hidden">
             <div className="relative h-2 bg-gradient-to-r from-racing-red via-racing-amber to-racing-purple" />
 
-            <div className="px-4 pb-4 -mt-12 relative">
+            <div className="px-4 pb-4 pt-4 relative">
               <div className="flex items-end gap-4">
                 {/* Avatar / foto piloto à esquerda */}
                 <div className="w-24 h-24 rounded-2xl hud-border surface-2 overflow-hidden shrink-0 ring-4 ring-background">
