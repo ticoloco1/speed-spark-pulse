@@ -14,47 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          id: string
+          pilot_id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          id?: string
+          pilot_id: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          id?: string
+          pilot_id?: string
+        }
+        Relationships: []
+      }
       pilot_posts: {
         Row: {
           author_id: string | null
           comments: number
           created_at: string
           cta: string | null
+          embed_kind: string | null
           id: string
           image_url: string | null
           kind: string
           likes: number
+          parent_post_id: string | null
           pilot_id: string
+          reposts: number
           sponsor: string | null
           text: string
+          video_url: string | null
         }
         Insert: {
           author_id?: string | null
           comments?: number
           created_at?: string
           cta?: string | null
+          embed_kind?: string | null
           id?: string
           image_url?: string | null
           kind?: string
           likes?: number
+          parent_post_id?: string | null
           pilot_id: string
+          reposts?: number
           sponsor?: string | null
           text: string
+          video_url?: string | null
         }
         Update: {
           author_id?: string | null
           comments?: number
           created_at?: string
           cta?: string | null
+          embed_kind?: string | null
           id?: string
           image_url?: string | null
           kind?: string
           likes?: number
+          parent_post_id?: string | null
           pilot_id?: string
+          reposts?: number
           sponsor?: string | null
           text?: string
+          video_url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "pilot_posts_parent_post_id_fkey"
+            columns: ["parent_post_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_posts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pilot_posts_pilot_id_fkey"
             columns: ["pilot_id"]
@@ -155,6 +195,35 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
