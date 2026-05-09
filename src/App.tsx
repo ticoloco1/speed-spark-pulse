@@ -13,6 +13,7 @@ import Auth from "./pages/Auth.tsx";
 import AuthCallback from "./pages/AuthCallback.tsx";
 import PilotSetup from "./pages/PilotSetup.tsx";
 import RacingProfile from "./pages/RacingProfile.tsx";
+import { SubdomainGate } from "./components/SubdomainGate";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <SubdomainGate />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/racing" element={<Racing />} />
