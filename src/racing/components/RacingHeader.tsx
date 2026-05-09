@@ -36,6 +36,15 @@ export const RacingHeader = () => {
         </div>
       </Link>
 
+      <nav className="hidden md:flex items-center gap-1 ml-4">
+        <Link to="/racing" className="text-[11px] font-display font-bold tracking-widest px-3 py-1.5 rounded hover:bg-secondary">
+          AO VIVO
+        </Link>
+        <Link to="/feed" className="text-[11px] font-display font-bold tracking-widest px-3 py-1.5 rounded hover:bg-secondary">
+          FEED
+        </Link>
+      </nav>
+
       <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center gap-1.5 surface-2 rounded px-2.5 py-1.5">
           <Fuel className="w-3.5 h-3.5 text-racing-amber" />
