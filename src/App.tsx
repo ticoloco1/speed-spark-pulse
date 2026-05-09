@@ -13,6 +13,7 @@ import Auth from "./pages/Auth.tsx";
 import AuthCallback from "./pages/AuthCallback.tsx";
 import PilotSetup from "./pages/PilotSetup.tsx";
 import RacingProfile from "./pages/RacingProfile.tsx";
+import Feed from "./pages/Feed.tsx";
 import { SubdomainGate } from "./components/SubdomainGate";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/racing" element={<Racing />} />
+            <Route path="/feed" element={<Feed />} />
             <Route path="/racing/render-test" element={<RenderTest />} />
             <Route path="/racing/profile/:slug" element={<RacingProfile />} />
             <Route path="/racing/profile" element={<RacingProfile />} />
