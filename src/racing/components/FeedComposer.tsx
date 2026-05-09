@@ -63,11 +63,9 @@ export const FeedComposer = ({ onPosted }: { onPosted?: () => void }) => {
         kind: "organic",
         sponsor: null,
         cta: null,
-        // @ts-expect-error new fields supported by extended schema
         video_url: parsed && parsed.kind !== "none" ? parsed.url : null,
-        // @ts-expect-error
         embed_kind: parsed?.kind ?? "none",
-      });
+      } as any);
       setText("");
       setEmbedUrl("");
       setShowEmbed(false);
