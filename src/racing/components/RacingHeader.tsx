@@ -43,6 +43,9 @@ export const RacingHeader = () => {
         <Link to="/feed" className="text-[11px] font-display font-bold tracking-widest px-3 py-1.5 rounded hover:bg-secondary">
           FEED
         </Link>
+        <Link to="/marketplace" className="text-[11px] font-display font-bold tracking-widest px-3 py-1.5 rounded hover:bg-secondary text-racing-amber">
+          MARKETPLACE
+        </Link>
         <Link to="/admin/seed" className="text-[11px] font-display font-bold tracking-widest px-3 py-1.5 rounded hover:bg-secondary text-racing-amber">
           IA SEED
         </Link>

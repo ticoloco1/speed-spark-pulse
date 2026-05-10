@@ -15,6 +15,7 @@ import PilotSetup from "./pages/PilotSetup.tsx";
 import RacingProfile from "./pages/RacingProfile.tsx";
 import Feed from "./pages/Feed.tsx";
 import AdminSeed from "./pages/AdminSeed.tsx";
+import Marketplace from "./pages/Marketplace.tsx";
 import { SubdomainGate } from "./components/SubdomainGate";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/racing" element={<Racing />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/admin/seed" element={<AdminSeed />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/racing/render-test" element={<RenderTest />} />
             <Route path="/racing/profile/:slug" element={<RacingProfile />} />
             <Route path="/racing/profile" element={<RacingProfile />} />
