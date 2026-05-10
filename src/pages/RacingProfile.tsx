@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ALL_PILOTS } from "@/racing/pilots";
+import { SEO } from "@/components/SEO";
+import { supabase } from "@/integrations/supabase/client";
 import { CarRenderer } from "@/racing/components/CarRenderer";
 import { InfiniteSideTrack } from "@/racing/components/InfiniteSideTrack";
 import { BottomTicker } from "@/racing/components/BottomTicker";
