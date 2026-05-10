@@ -14,6 +14,7 @@ import AuthCallback from "./pages/AuthCallback.tsx";
 import PilotSetup from "./pages/PilotSetup.tsx";
 import RacingProfile from "./pages/RacingProfile.tsx";
 import Feed from "./pages/Feed.tsx";
+import AdminSeed from "./pages/AdminSeed.tsx";
 import { SubdomainGate } from "./components/SubdomainGate";
 
 const queryClient = new QueryClient();
