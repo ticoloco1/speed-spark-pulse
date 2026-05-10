@@ -15,6 +15,7 @@ import PilotSetup from "./pages/PilotSetup.tsx";
 import RacingProfile from "./pages/RacingProfile.tsx";
 import Feed from "./pages/Feed.tsx";
 import AdminSeed from "./pages/AdminSeed.tsx";
+import Marketplace from "./pages/Marketplace.tsx";
 import { SubdomainGate } from "./components/SubdomainGate";
 
 const queryClient = new QueryClient();
