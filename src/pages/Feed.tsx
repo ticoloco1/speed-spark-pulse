@@ -10,6 +10,7 @@ import { FeedComposer } from "@/racing/components/FeedComposer";
 import { PostCard, type FeedPost } from "@/racing/components/PostCard";
 import { SuggestedPilotsCars } from "@/racing/components/SuggestedPilotsCars";
 import { Loader2 } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 type Tab = "global" | "following";
 
