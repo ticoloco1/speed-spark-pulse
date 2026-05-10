@@ -29,12 +29,42 @@ export default function RacingProfile() {
   );
   const [tab, setTab] = useState<Tab>("feed");
   const [following, setFollowing] = useState(false);
+  const [aiSeo, setAiSeo] = useState<{ title: string; description: string; jsonLd: any } | null>(null);
+
+  const canonical = `https://${pilot.slug}.hashpo.com`;
+  const fallbackTitle = `${pilot.name} #${pilot.number} — ${pilot.team} | Hashpo Racing`;
+  const fallbackDesc = `Piloto ${pilot.name}, equipe ${pilot.team}, sponsor ${pilot.sponsor}. Melhor volta ${pilot.bestLap}. Acompanhe o feed, blog e corridas ao vivo no Hashpo.`;
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: pilot.name,
+    url: canonical,
+    jobTitle: "Racing Driver",
+    affiliation: { "@type": "SportsTeam", name: pilot.team },
+    sponsor: { "@type": "Organization", name: pilot.sponsor },
+    nationality: pilot.country,
+  };
+
+  const generateSeoWithAI = async () => {
+    const { data, error } = await supabase.functions.invoke("generate-seo", {
+      body: { kind: "pilot", url: canonical, pilot },
+    });
+    if (!error && data?.title) setAiSeo(data);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <SEO
+        title={aiSeo?.title ?? fallbackTitle}
+        description={aiSeo?.description ?? fallbackDesc}
+        canonical={canonical}
+        type="profile"
+        jsonLd={aiSeo?.jsonLd ?? personJsonLd}
+      />
       <RacingHeader />
       <InfiniteSideTrack side="left" />
       <TopTicker />
+
 
       <main className="flex-1 grid grid-cols-12 gap-3 p-3 xl:pl-32">
         {/* LEFT: Suggested pilots as little cars */}
