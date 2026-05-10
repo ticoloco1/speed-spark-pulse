@@ -175,6 +175,13 @@ export default function RacingProfile() {
                 >
                   VER GARAGEM →
                 </Link>
+                <button
+                  onClick={generateSeoWithAI}
+                  className="text-[10px] font-display font-bold tracking-widest text-racing-amber hover:underline"
+                  title="Gerar SEO de alta qualidade com IA"
+                >
+                  ⚡ SEO IA
+                </button>
               </div>
 
               <div className="grid grid-cols-4 gap-2 mt-4">
