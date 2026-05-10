@@ -33,6 +33,7 @@ const App = () => (
             <Route path="/racing" element={<Racing />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/admin/seed" element={<AdminSeed />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/racing/render-test" element={<RenderTest />} />
             <Route path="/racing/profile/:slug" element={<RacingProfile />} />
             <Route path="/racing/profile" element={<RacingProfile />} />
