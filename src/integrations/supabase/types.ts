@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_sponsorships: {
+        Row: {
+          bid_id: string | null
+          created_at: string
+          ends_at: string
+          id: string
+          rate_per_second: number
+          slot_id: string
+          sponsor_color: string | null
+          sponsor_logo_url: string | null
+          sponsor_name: string
+          started_at: string
+        }
+        Insert: {
+          bid_id?: string | null
+          created_at?: string
+          ends_at: string
+          id?: string
+          rate_per_second: number
+          slot_id: string
+          sponsor_color?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name: string
+          started_at?: string
+        }
+        Update: {
+          bid_id?: string | null
+          created_at?: string
+          ends_at?: string
+          id?: string
+          rate_per_second?: number
+          slot_id?: string
+          sponsor_color?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name?: string
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_sponsorships_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_bids"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "active_sponsorships_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
@@ -249,6 +303,98 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      sponsor_bids: {
+        Row: {
+          bidder_id: string
+          created_at: string
+          duration_seconds: number
+          id: string
+          message: string | null
+          rate_per_second: number
+          slot_id: string
+          sponsor_color: string | null
+          sponsor_logo_url: string | null
+          sponsor_name: string
+          status: string
+          total_amount: number | null
+        }
+        Insert: {
+          bidder_id: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          message?: string | null
+          rate_per_second: number
+          slot_id: string
+          sponsor_color?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name: string
+          status?: string
+          total_amount?: number | null
+        }
+        Update: {
+          bidder_id?: string
+          created_at?: string
+          duration_seconds?: number
+          id?: string
+          message?: string | null
+          rate_per_second?: number
+          slot_id?: string
+          sponsor_color?: string | null
+          sponsor_logo_url?: string | null
+          sponsor_name?: string
+          status?: string
+          total_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_bids_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsor_slots: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          label: string
+          min_rate_per_second: number
+          scope: string
+          scope_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind: string
+          label: string
+          min_rate_per_second?: number
+          scope?: string
+          scope_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          label?: string
+          min_rate_per_second?: number
+          scope?: string
+          scope_ref?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
