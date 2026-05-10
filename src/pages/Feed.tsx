@@ -10,6 +10,7 @@ import { FeedComposer } from "@/racing/components/FeedComposer";
 import { PostCard, type FeedPost } from "@/racing/components/PostCard";
 import { SuggestedPilotsCars } from "@/racing/components/SuggestedPilotsCars";
 import { Loader2 } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 type Tab = "global" | "following";
 
@@ -86,6 +87,22 @@ export default function Feed() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      <SEO
+        title="Feed Hashpo Racing — Pilotos, Corridas e Sponsors ao Vivo"
+        description="Timeline ao vivo do Hashpo: posts de pilotos GT3, corridas, leilões de sponsor, blogs e vídeos. Siga seus pilotos favoritos."
+        canonical="https://hashpo.com/feed"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Hashpo Racing",
+          url: "https://hashpo.com",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://hashpo.com/racing/profile/{search_term}",
+            "query-input": "required name=search_term",
+          },
+        }}
+      />
       <RacingHeader />
       <InfiniteSideTrack side="left" />
       <TopTicker />
